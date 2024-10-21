@@ -1,4 +1,4 @@
-### Project: Life History Parameter Estimation of *Ostrea eulisa*
+### Project: Life History Parameter Estimation of *Ostrea edulis*
 
 This repository contains data and code related to the estimation of life history parameters for *Ostrea eulisa*. The data comes from an experiment conducted by the Spanish Institute of Oceanography (IEO) of Murcia, in collaboration with the IEO of Cádiz.
 
