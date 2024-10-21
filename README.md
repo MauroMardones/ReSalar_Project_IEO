@@ -7,6 +7,7 @@ This repository contains data and code related to the estimation of life history
 - `DATA/`: Contains all raw and processed data from the experiment.
   - `raw_data.csv`: The raw experimental data.
   - `processed_data.csv`: Data cleaned and processed for analysis.
+  - This folder is private by right permission on data
 
 - `scripts/`: Contains all the R scripts used for data analysis and parameter estimation.
   - `data_cleaning.R`: Script for cleaning and processing raw data.
