@@ -89,6 +89,8 @@ db1<- db %>%
     DIA = day(Date),
     MES = month(Date),
     ANO = year(Date))
+
+table(db1$ANO)
 ```
 histogram length data to viz in anthor way.
 
@@ -106,73 +108,71 @@ jzstrata <- ggplot(db1,
 jzstrata
 ```
 
-Statistical difference
+Statistical difference with 
 
 ```{r}
 m <- aov(sizeE ~ Sampling.point, data=db1)
 plot(TukeyHSD(m))
-
 # Convertir la variable categórica a factor
 db1$Sampling.point <- as.factor(db1$Sampling.point)
-
 # Ajustar el modelo ANOVA
 m <- aov(size ~ Sampling.point, data = db1)
-
 # Aplicar TukeyHSD
 tukey_result <- TukeyHSD(m)
 ```
 
 
-```{r}
+```{r fig.height=6, fig.width=4}
 par(mar = c(5, 8, 4, 2)) 
 # Graficar el resultado
 plot(tukey_result, cex.axis = 0.7)
 
 ```
-histogram length data to viz in anthor way.
+Horizontal Lines (Confidence Intervals):
+
+Each line represents the confidence interval for the difference in means between two groups. The wider the interval, the more uncertain the estimate is. If a confidence interval crosses zero (i.e., it includes zero), it means that the difference between the two group means is not statistically significant.
+
+Midpoints of the Lines:
+
+The midpoints of the horizontal lines represent the estimated difference in means between the two groups being compared.
+
+Significance:
+Lines entirely above or below zero indicate that there is a statistically significant difference between the two group means, since zero is not included in the confidence interval. Lines that cross zero indicate that there is no significant difference between the two group means.
+
+Groups Compared:
+
+On the y-axis, you'll see the pairs of groups being compared, typically written in the form "Group1-Group2." Each pair corresponds to one of the confidence intervals on the plot.
+
+How to Interpret the Plot:
+If a horizontal line does not overlap zero, the difference between the corresponding groups is significant at the given confidence level (typically 95%). If a horizontal line does overlap zero, there is no significant difference between those two groups.
+The longer the horizontal line, the more variability or uncertainty there is in the estimated difference.
 
 
-```{r lengcom, warning=FALSE}
-jzstrata <- ggplot(sf4 %>% 
-                     mutate(ID = if_else(ID == "Extra", "GS", ID)) %>% 
-               filter(Year>2010,
-                      ID !="Outer"),
-             aes(x=length_total_cm, 
-                 y = as.factor(Month), 
-                 fill=ID))+
-  geom_density_ridges(stat = "binline", bins = 30, 
+## Data Viz
+
+Vizualization of length structure by month and Sampling point.
+
+
+```{r lengcom}
+data1 <- ggplot(db1,
+             aes(x=size,
+                 y=as.factor(MES),
+                 fill=Sampling.point))+
+  facet_grid(~ANO)+
+  geom_density_ridges(stat = "binline", bins = 40, 
                       scale = 1.9, 
-                      draw_baseline = FALSE,
-                      alpha=0.9)+
-  facet_grid(Year~ID) +   
-  geom_vline(xintercept = 3.6, color = "red")+
-  scale_x_continuous(breaks = seq(from = 1, to = 10, 
-                                  by = 2))+
-  scale_y_discrete(breaks = seq(from = 1, 
-                                to = 12, by = 4))+
-  scale_fill_viridis_d(name="Strata",
-                       option="F")+
+                      draw_baseline = T,
+                      alpha=0.9)+  
+  scale_fill_viridis_d(name="Sampling Point",
+                       option="G")+
   theme_few()+
   xlab("Length (cm.)")+
-  ylab("")
-jzstrata
+  ylab("")+
+  coord_flip()
+data1
 ```
+
 Now, must filter the DF
-
-```{r}
-sf5 <- sf4 |> 
-  dplyr::select(c("ID",
-        "date_catchperiod_start",
-        "length_total_cm",
-        "Year",
-        "Month",
-        "sex_code",
-         "greenweight_kg")) |> 
-  mutate(ID = if_else(ID == "Extra", "GS", ID)) |>  
-  filter(ID !="Outer") |> 
-  data.frame()
-```
-
 
 
 Calculating the proportion of records per year and per stratum in a table. This table allows us to establish criteria for defining the strata on which we will analyze krill parameter. We leave out just `JOIN`.
@@ -360,22 +360,12 @@ first we use `mixR` to identified numbers of compoenent (modal compositions) we 
 
 
 ```{r eval=FALSE}
-unique_ids <- unique(sf5$ID)
-
-obj_id <- list()
-
-for (id in unique_ids) {
-  filtered_data <- sf5 %>% 
-    drop_na(length_total_cm) %>% 
-    filter(sex_code %in% "M", 
-           ID !="JOIN",
-           ID == id)
-  obj_id[[id]] <- filtered_data
-}
+filtered_db <- db1 %>% 
+    drop_na(size)
 
 # select number of components
 
-s_normalgs = select(obj_id$GS$length_total_cm, ncomp = 2:6)
+s_normalgs = select(filtered_db$size, ncomp = 2:6)
 plot(s_normalgs)
 s_normalei = select(obj_id$EI$length_total_cm, ncomp = 2:6)
 plot(s_normalei)
@@ -385,31 +375,41 @@ s_normalsswi = select(obj_id$SSIW$length_total_cm, ncomp = 2:6)
 plot(s_normalsswi)
 
 # fit a Normal mixture model
-modgs = mixfit(obj_id$GS$length_total_cm, ncomp = 3,
-              pi = c(0.5, 0.5, 0.5), 
-              mu = c( 3, 4, 5), 
-              sd = c(0.2, 0.2, 0.2))
+modgs = mixfit(filtered_db$size, 
+               ncomp = 4, 
+               pi = c(0.25, 0.25, 0.25, 0.25),  # Pesos iniciales
+              mu = c( 20, 30, 40, 50),      # Medias iniciales diferentes
+               sd = c(5, 5, 5, 5))    # Desviaciones estándar iniciales más grandes
 
 
-# fit a Normal mixture model
-modei = mixfit(obj_id$EI$length_total_cm, ncomp = 4,
-              pi = c(0.5, 0.5, 0.5, 0.5), 
-              mu = c( 3, 4, 5, 6), 
-              sd = c(0.2, 0.2, 0.2, 0.2))
 
 
-# fit a Normal mixture model
-modbs = mixfit(obj_id$BS$length_total_cm, ncomp = 5,
-              pi = c(0.5, 0.5, 0.5, 0.5, 0.5), 
-              mu = c( 2, 3, 4, 5, 6), 
-              sd = c(0.2, 0.2, 0.2, 0.2, 0.2))
 
+# Definir el número de componentes
+ncomp <- 5
 
-# fit a Normal mixture model
-modsswi = mixfit(obj_id$SSIW$length_total_cm, ncomp = 4,
-              pi = c(0.5, 0.5, 0.5, 0.5), 
-              mu = c( 3, 4, 5, 6), 
-              sd = c(0.2, 0.2, 0.2, 0.2))
+# Definir medias entre 20 y 70 cm (por ejemplo, espaciadas uniformemente)
+medias <- seq(20, 70, length.out = ncomp)
+
+# Definir pesos iniciales (uniformes)
+pesos <- rep(1/ncomp, ncomp)  # Todos los pesos iguales (puedes ajustar si es necesario)
+
+# Definir desviaciones estándar iniciales (puedes ajustarlas según tus datos)
+desviaciones <- rep(1, ncomp)  # Desviaciones estándar iguales (ajusta si es necesario)
+
+# Ajustar el modelo de mezcla
+modgs <- mixfit(filtered_db$size, 
+                ncomp = ncomp, 
+                pi = pesos, 
+                mu = medias, 
+                sd = desviaciones)
+
+# Verificar el resultado
+summary(modgs)
+
+# Graficar el ajuste
+plot(modgs, col=3)
+
 ```
 
 
