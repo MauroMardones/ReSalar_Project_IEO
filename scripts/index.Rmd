@@ -273,14 +273,14 @@ db1$Date <- as.Date(db1$Date)
 lfq <- lfqCreate(data = db1,
                    Lname = "size",
                    Dname = "Date",
-                   bin_size = 0.1,
+                   bin_size = 0.2,
                  length_unit = "mm",
-                 Lmin = 0.1,
+                 Lmin = 0.8,
                  aggregate_dates=T)
 
 # Graficar el objeto lfq
 plot(lfq, Fname = "catch",
-       main = "nombre")
+       main = "Ostrea edulis")
 
 ```
 
@@ -294,74 +294,166 @@ Bhattacharya(lfq)
 now we assign objet to male `lfq_result` and female `lfq_resulthe` and plot with `lfqRestructure()`
 
 
-Male
+## (Documentation) Restructuring of length frequency data
+
+First step of the *Electronic LEngth Frequency ANalysis (ELEFAN)*, which is restructuring length-frequency data (lfq). This is done according to a certain protocol, described by many authors (see Details or References for more information).
+
 
 ```{r}
-
-data(synLFQ5)
-res <- lfqRestructure(synLFQ5, MA=11)
-plot(res)
-tmp <- lfqFitCurves(res, par=list(Linf=80,K=0.5,t_anchor=0.25), draw=TRUE)
-
-
 # Restructurar el objeto lfq
-lfqbin <- lfqRestructure(lfq, MA = 5, addl.sqrt = TRUE)
+lfqbin <- lfqRestructure(lfq, 
+                         MA = 5, 
+                         addl.sqrt = F)
 # Graficar el objeto lfq reestructurado
 plot(lfqbin, hist.col = c("white", "black"),
      image.col = c(rep(rgb(1,0.8,0.8),1000), "white", 
                    rep(rgb(0.8,0.8,1),1000)),
-       ylim = c(0,max(lfqbin$midLengths+5)))
+       ylim = c(0,max(lfqbin$midLengths)))
   # Ajustar curvas al objeto lfq reestructurado
-  tmp <- lfqFitCurves(lfqbin, par = list(Linf=6.5, 
-                                          K=0.45,
-                                          t_anchor=1.5),
+  tmp <- lfqFitCurves(lfqbin, par = list(Linf=7.9, 
+                                          K=0.7,
+                                          t_anchor=0.1),
                       draw = TRUE, col=4, lty=2)
-
 ```
 
 
 ```{r}
-#### Parameters to `SSWI`
+#### Parameters dif methods
+res_simple <- ELEFAN(lfq,
+                     Linf_fix = NA,
+                     Linf_range = seq(6.0,8.0,0.1),
+                     K_range = exp(seq(log(0.1), 
+                                       log(2),
+                                       length.out = 50)),
+                     C = 0,
+                     ts = 0,  
+                     MA = 5,  
+                     addl.sqrt = F,
+                     agemax = 28,
+                     flagging.out = TRUE,
+                     method = "optimise",cross.date = NULL,
+                     cross.midLength = NULL,
+                     cross.max = FALSE,
+                     hide.progressbar = FALSE,
+                     plot = FALSE,contour = FALSE,
+                     add.values = TRUE,
+                     rsa.colors = terrain.colors(20),
+                     plot_title = TRUE)
 
 # run ELEFAN with simulated annealing
-res_SAsswi <- ELEFAN_SA(lfq,
+res_SA <- ELEFAN_SA(lfq,
                     SA_time = 60*0.5, 
                     MA = 5, 
                     agemax = 28,
-                    seasonalised = TRUE, addl.sqrt = TRUE,
-                    init_par = list(Linf = 78, 
-                                    K = 0.5, 
+                    seasonalised = T, 
+                    addl.sqrt = F,
+                    init_par = list(Linf = 7.8, 
+                                    K = 0.3, 
                                     t_anchor = 0.5,
                                     C=0.5, 
                                     ts = 0.5),
-                    low_par = list(Linf = 70,
+                    low_par = list(Linf = 7.0,
                                    K = 0.01,
                                    t_anchor = 0, 
                                    C = 0, 
                                    ts = 0),
-                    up_par = list(Linf = 80,
-                                  K = 1, 
+                    up_par = list(Linf = 8.0,
+                                  K = 0.9, 
                                   t_anchor = 1,
-                                  C = 1, ts = 1))
+                                  C = 1, ts = 1),
+                    plot = FALSE,
+                    plot.score = TRUE)
 
 # run ELEFAN with genetic algorithm
-res_GAsswi <- ELEFAN_GA(lfq_results$SSIW, 
+res_GA <- ELEFAN_GA(lfq, 
                     MA = 5, 
                     seasonalised = TRUE, 
-                    maxiter = 10, 
-                    agemax = 5,
-                    addl.sqrt = TRUE,
-                     low_par = list(Linf = 5,
-                                   K = 0.5,
+                    maxiter = 50, 
+                    agemax = 28,
+                    addl.sqrt = F,
+                      low_par = list(Linf = 7.0,
+                                   K = 0.01,
                                    t_anchor = 0, 
                                    C = 0, 
                                    ts = 0),
-                    up_par = list(Linf = 7.5,
-                                  K = 1, 
+                    up_par = list(Linf = 8.0,
+                                  K = 0.9, 
                                   t_anchor = 1,
                                   C = 1, ts = 1),
-                    monitor = FALSE)
+                    monitor = FALSE,
+                    plot = T)
 
+
+```
+
+
+Parámetros comunes:
+
+`Linf_range`: Para hacer que ELEFAN sea comparable con los otros métodos, he ajustado `Linf_range` a seq(7.0, 8.0, 0.1) para que coincida con los límites de low_par y up_par en los otros métodos. `K_range`: Utilicé el mismo rango de K para los tres métodos, con valores entre 0.01 y 0.9. 
+
+En los tres métodos, he activado la estacionalidad (`seasonalised = TRUE` en `ELEFAN_SA` y `ELEFAN_GA`) y utilicé valores de `C` = 0.5 y `ts` = 0.5 para asegurar la coherencia. Estos parametros dicen relaciñon con la oscilacion estacional fdel crecimiento, información que para *O. edulis* no tenemos y por eso la dejamos en la mitad del año.
+
+Los límites inferiores (`low_par`) y superiores (`up_par`) son consistentes entre los tres métodos.
+init_par en ELEFAN_SA:
+
+Establecer los valores iniciales para `Linf`, `K`, `t_anchor`, `C` y `ts` en `ELEFAN_SA` para ser consistentes con los otros métodos.
+
+
+```{r}
+# Parâmetros comunes
+Linf_range <- seq(6.0, 8.0, 0.1)
+K_range <- exp(seq(log(0.01), log(0.9), length.out = 50)) # Coincide con los otros métodos
+
+low_par <- list(Linf = 6.0, K = 0.01, t_anchor = 0, C = 0, ts = 0)
+up_par <- list(Linf = 8.0, K = 0.9, t_anchor = 1, C = 1, ts = 1)
+init_par <- list(Linf = 7.8, K = 0.3, t_anchor = 0.5, C = 0.5, ts = 0.5)
+
+# Método 1: ELEFAN con optimización
+res_simple <- ELEFAN(lfq,
+                     Linf_fix = NA,
+                     Linf_range = Linf_range, # Coincide con otros métodos
+                     K_range = K_range, # Coincide con otros métodos
+                     C = 0.5,  # Estacionalidad
+                     ts = 0.5, # Valor inicial de ts
+                     MA = 5,
+                     addl.sqrt = FALSE,
+                     agemax = 28,
+                     flagging.out = TRUE,
+                     method = "optimise",
+                     cross.date = NULL,
+                     cross.midLength = NULL,
+                     cross.max = FALSE,
+                     hide.progressbar = FALSE,
+                     plot = FALSE,
+                     contour = FALSE,
+                     add.values = TRUE,
+                     rsa.colors = terrain.colors(20),
+                     plot_title = TRUE)
+
+# Método 2: ELEFAN con Simulated Annealing (SA)
+res_SA <- ELEFAN_SA(lfq,
+                    SA_time = 60 * 0.5,
+                    MA = 5,
+                    agemax = 28,
+                    seasonalised = TRUE,  # Estacionalidad activada
+                    addl.sqrt = FALSE,
+                    init_par = init_par, # Valores iniciales comunes
+                    low_par = low_par,   # Limites inferiores comunes
+                    up_par = up_par,     # Limites superiores comunes
+                    plot = FALSE,
+                    plot.score = TRUE)
+
+# Método 3: ELEFAN con algoritmo genético (GA)
+res_GA <- ELEFAN_GA(lfq,
+                    MA = 5,
+                    seasonalised = TRUE,  # Estacionalidad activada
+                    maxiter = 50,
+                    agemax = 28,
+                    addl.sqrt = FALSE,
+                    low_par = low_par,  # Limites inferiores comunes
+                    up_par = up_par,    # Limites superiores comunes
+                    monitor = FALSE,
+                    plot = TRUE)
 
 ```
 
