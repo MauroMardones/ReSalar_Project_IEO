@@ -493,7 +493,7 @@ total_r_m_5  %>%
   separate(group, into = c("METHOD"), sep = " ") %>% 
   kbl(booktabs = T,
       position="ht!",
-    caption = "Parametres LH to O. edulis with 26 age max") %>%
+    caption = "Parametres LH to O. edulis with 5 age max") %>%
   kable_styling(latex_options = c("striped",
                                   "condensed"),
                 full_width = FALSE)
@@ -591,7 +591,7 @@ both plot
 
 ```{r}
 ggarrange(age26, age5, common.legend = TRUE,
-          ncol=1,
+          ncol=2,
           legend="bottom")
 ```
 
@@ -669,7 +669,7 @@ Hago la Tabla
 Total_M_Mean  %>%
   kbl(booktabs = T,
       position="ht!",
-    caption = "Estimated M by age") %>%
+    caption = "Estimated M w/ different age") %>%
   kable_styling(latex_options = c("striped",
                                   "condensed"),
                 full_width = FALSE)

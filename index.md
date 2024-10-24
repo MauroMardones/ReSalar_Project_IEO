@@ -387,12 +387,12 @@ res_SA <- ELEFAN_SA(lfq,
 ```
 ## Simulated annealing is running. 
 ## This will take approximately 0.5 minutes.
-## timeSpan = 30.013727 maxTime = 30
+## timeSpan = 30.012224 maxTime = 30
 ## Emini is: -0.1913507391
 ## xmini are:
 ## 7.13536267 0.1001415238 0.4662450179 0.6397465542 0.8242201749 
-## Totally it used 30.013848 secs
-## No. of function call is: 859
+## Totally it used 30.012317 secs
+## No. of function call is: 910
 ```
 
 ``` r
@@ -466,12 +466,12 @@ res_SA_5 <- ELEFAN_SA(lfq,
 ```
 ## Simulated annealing is running. 
 ## This will take approximately 0.5 minutes.
-## timeSpan = 30.021757 maxTime = 30
+## timeSpan = 30.002977 maxTime = 30
 ## Emini is: -0.1435001352
 ## xmini are:
 ## 7.675341436 0.392098701 0.658589121 0.07986231521 0.3594472557 
-## Totally it used 30.021891 secs
-## No. of function call is: 2677
+## Totally it used 30.003128 secs
+## No. of function call is: 2518
 ```
 
 ``` r
@@ -607,14 +607,14 @@ total_r_m_5  %>%
   separate(group, into = c("METHOD"), sep = " ") %>% 
   kbl(booktabs = T,
       position="ht!",
-    caption = "Parametres LH to O. edulis with 26 age max") %>%
+    caption = "Parametres LH to O. edulis with 5 age max") %>%
   kable_styling(latex_options = c("striped",
                                   "condensed"),
                 full_width = FALSE)
 ```
 
 <table class="table" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>Parametres LH to O. edulis with 26 age max</caption>
+<caption>Parametres LH to O. edulis with 5 age max</caption>
  <thead>
   <tr>
    <th style="text-align:left;"> METHOD </th>
@@ -739,7 +739,7 @@ both plot
 
 ``` r
 ggarrange(age26, age5, common.legend = TRUE,
-          ncol=1,
+          ncol=2,
           legend="bottom")
 ```
 
@@ -823,14 +823,14 @@ Hago la Tabla
 Total_M_Mean  %>%
   kbl(booktabs = T,
       position="ht!",
-    caption = "Estimated M by age") %>%
+    caption = "Estimated M w/ different age") %>%
   kable_styling(latex_options = c("striped",
                                   "condensed"),
                 full_width = FALSE)
 ```
 
 <table class="table" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>Estimated M by age</caption>
+<caption>Estimated M w/ different age</caption>
  <thead>
   <tr>
    <th style="text-align:left;">   </th>
