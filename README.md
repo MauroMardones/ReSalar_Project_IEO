@@ -34,7 +34,7 @@ To run the scripts, ensure you have the following R packages installed:
 You can install all required packages by running:
 
 ```R
-install.packages(c("tidyverse", "kableExtra", "ggplot2", "nlme"))
+install.packages(c("tidyverse", "kableExtra", "ggplot2", "nlme" "TropfishR"))
 ```
 
 ### How to Use
@@ -48,7 +48,7 @@ install.packages(c("tidyverse", "kableExtra", "ggplot2", "nlme"))
 
 ### Results
 
-principal oytpus and results can be found in this link: 
+principal oytpus and results can be found in this link: [Parameters Ostrea edulis](https://mauromardones.github.io/ReSalar_Project_IEO/)
 
 ### Authors and Acknowledgments
 
