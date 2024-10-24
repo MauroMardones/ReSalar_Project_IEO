@@ -2,7 +2,7 @@
 title: "Derive Life story Parameters and natural mortality rates for Ostrea edulis to Minor Sea, Murcia, Spain"
 subtitle: "Project ReSalar"
 author: "Mardones, M; Delgado, Alcaraz, R; Albentosa, M"
-date:  "`r format(Sys.time(), '%d %B, %Y')`"
+date:  "24 October, 2024"
 bibliography: param.bib
 csl: apa.csl
 link-citations: yes
@@ -27,7 +27,8 @@ editor_options:
 ---
 
 
-```{r setup1}
+
+``` r
 rm(list = ls())
 set.seed(9)
 knitr::opts_chunk$set(echo = TRUE,
@@ -46,7 +47,8 @@ options(bitmapType = "cairo")
 
 # Cargar paquetes necesarios para la estimacion y vizualización.
 
-```{r lib, message=F, echo= TRUE}
+
+``` r
 library(here)
 library(kableExtra)
 library(ggthemes)
@@ -69,7 +71,8 @@ library(readxl)
 
 Load DB from experiment in salar in Minor Sea. This data is monthly recollected.
 
-```{r data}
+
+``` r
 # Restore the object
 db <- read_excel(here("DATA",
                      "BD_lfd_crec_salinas.xlsx"),
@@ -77,7 +80,8 @@ db <- read_excel(here("DATA",
 ```
 Separate `Date` column
 
-```{r dateformat}
+
+``` r
 # Asigno  columnas a fechas separadas.
 db1<- db %>%
   mutate(
@@ -87,10 +91,17 @@ db1<- db %>%
 
 table(db1$ANO)
 ```
+
+```
+## 
+## 2023 2024 
+## 1248 1044
+```
 histogram length data to viz in another way.
 
 
-```{r lengcom2, warning=FALSE}
+
+``` r
 jzstrata <- ggplot(db1,
              aes(x=size))+
   geom_histogram(binwidth = 2)+
@@ -102,19 +113,24 @@ jzstrata <- ggplot(db1,
 jzstrata
 ```
 
+<img src="index_files/figure-html/lengcom2-1.jpeg" style="display: block; margin: auto;" />
+
 Statistical difference between month
 
-```{r}
+
+``` r
 m <- aov(sizeE ~ Sampling.point, data=db1)
 ```
 
 
-```{r eval=FALSE}
+
+``` r
 plot(TukeyHSD(m))
 ```
 
 
-```{r}
+
+``` r
 # Convertir la variable categórica a factor
 db1$Sampling.point <- as.factor(db1$Sampling.point)
 # Ajustar el modelo ANOVA
@@ -147,7 +163,8 @@ Si una línea horizontal no cruza el cero, la diferencia entre los grupos corres
 simple grafica de progesión de las tallas de *O. edulis* muestreadas mensualmente durante el experimento entre los años 2023 y 2024.
 
 
-```{r lengcom}
+
+``` r
 data1 <- ggplot(db1,
              aes(x=size,
                  y=as.factor(Date)))+
@@ -167,12 +184,15 @@ data1 <- ggplot(db1,
 data1
 ```
 
+<img src="index_files/figure-html/lengcom-1.jpeg" style="display: block; margin: auto;" />
+
 ## Analisis
 
 First we use `mixR` [@Yu2021a] to identified numbers of component (modal compositions). With this result, set `ELEFAN` method
 
 
-```{r}
+
+``` r
 # Saco los NA
 filtered_db <- db1 %>% 
     drop_na(size)
@@ -180,9 +200,12 @@ filtered_db <- db1 %>%
 s_normalgs = select(filtered_db$size, ncomp = 1:8)
 plot(s_normalgs)
 ```
+
+<img src="index_files/figure-html/unnamed-chunk-4-1.jpeg" style="display: block; margin: auto;" />
 The final model: normal mixture (unequal variances) with 3 components, but, by common sense we select 5 components modals.
 
-```{r}
+
+``` r
 # Definir el número de componentes
 ncomp <- 5
 # Definir medias entre 20 y 70 cm (por ejemplo, espaciadas uniformemente)
@@ -200,19 +223,22 @@ modgs <- mixfit(filtered_db$size,
 ```
 
 
-```{r}
+
+``` r
 # Graficar el ajuste
 plot(modgs,
      smoothness = 300,
      theme = "bw",
      trans=0.4)
-
 ```
+
+<img src="index_files/figure-html/unnamed-chunk-6-1.jpeg" style="display: block; margin: auto;" />
 
 
 Preparamos el objeto para la estimación 
 
-```{r}
+
+``` r
 db1$Date <- as.Date(db1$Date)
   # Crear un objeto lfq para el ID actual
 lfq <- lfqCreate(data = db1,
@@ -226,13 +252,23 @@ lfq <- lfqCreate(data = db1,
 # Graficar el objeto lfq
 plot(lfq, Fname = "catch",
        main = "Ostrea edulis")
-
 ```
+
+<img src="index_files/figure-html/unnamed-chunk-7-1.jpeg" style="display: block; margin: auto;" />
 Utilizamos un metodo de Battacharya [@Mildenberger2017] para identificar las frecuencias relativas y la distribución de frecuencia de distintas cohortes en la distribución observada de frecuencias de longitud, resolviéndola en componentes gaussianos.
 
-```{r message=FALSE}
+
+``` r
 Bhattacharya(lfq,
              n_rnorm = 3000)
+```
+
+```
+## Interactive session needed for Bhattacharya.
+```
+
+```
+## NULL
 ```
 
 
@@ -243,7 +279,8 @@ Ahora asignamos los objetos `lfq_result` y ploteamos con `lfqRestructure()` usan
 First step of the *Electronic LEngth Frequency ANalysis (ELEFAN)*, which is restructuring length-frequency data (lfq). This is done according to a certain protocol, described by many authors (see Details or References for more information).
 
 
-```{r}
+
+``` r
 # Restructurar el objeto lfq
 lfqbin <- lfqRestructure(lfq, 
                          MA = 5, 
@@ -259,6 +296,8 @@ plot(lfqbin, hist.col = c("white", "black"),
                                           t_anchor=0.1),
                       draw = TRUE, col=4, lty=2)
 ```
+
+<img src="index_files/figure-html/unnamed-chunk-9-1.jpeg" style="display: block; margin: auto;" />
 
 ## Calculo de Parámetros
 
@@ -277,7 +316,8 @@ Establecer los valores iniciales para `Linf`, `K`, `t_anchor`, `C` y `ts` en `EL
 
 
 
-```{r}
+
+``` r
 # set param
 Linf_range <- seq(7.0, 8.0, 0.1)
 K_range <- exp(seq(log(0.01),
@@ -307,7 +347,8 @@ Procedemos con el calculo de parametros y verificamos sus diferencias.
 Primero estimaremos los parametros con las edades propuestas por el equipo *Resalar*, donde establecen que La edad máxima especie según Stenzel (1971) es de 26-27 años. (Me faltan estas referencias)
 
 
-```{r message=FALSE, warning=FALSE}
+
+``` r
 # Método 1: ELEFAN con optimización
 res_simple <- ELEFAN(lfq,
                      Linf_fix = NA,
@@ -329,7 +370,15 @@ res_simple <- ELEFAN(lfq,
                      add.values = TRUE,
                      rsa.colors = terrain.colors(20),
                      plot_title = TRUE)
+```
 
+```
+## Optimisation procuedure of ELEFAN is running. 
+## This will take some time. 
+## The process bar will inform you about the process of the calculations.
+```
+
+``` r
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
@@ -342,7 +391,20 @@ res_SA <- ELEFAN_SA(lfq,
                     up_par = up_par,     # Limites superiores comunes
                     plot = FALSE,
                     plot.score = TRUE)
+```
 
+```
+## Simulated annealing is running. 
+## This will take approximately 0.5 minutes.
+## timeSpan = 30.006736 maxTime = 30
+## Emini is: -0.1913507391
+## xmini are:
+## 7.13536267 0.1001415238 0.4662450179 0.6397465542 0.8242201749 
+## Totally it used 30.006838 secs
+## No. of function call is: 885
+```
+
+``` r
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA <- ELEFAN_GA(lfq,
                     MA = 5,
@@ -354,12 +416,18 @@ res_GA <- ELEFAN_GA(lfq,
                     up_par = up_par,    # Limites superiores comunes
                     monitor = FALSE,
                     plot = FALSE)
+```
 
 ```
+## Genetic algorithm is running. This might take some time.
+```
+
+<img src="index_files/figure-html/unnamed-chunk-11-1.jpeg" style="display: block; margin: auto;" />
 
 Ahora estimaremos con lo encontrado en Rosique (1994) en el Mar Menor reportando una edad máxima  de 5 años 
 
-```{r message=FALSE, warning=FALSE}
+
+``` r
 # Método 1: ELEFAN con optimización
 res_simple_5 <- ELEFAN(lfq,
                      Linf_fix = NA,
@@ -381,7 +449,15 @@ res_simple_5 <- ELEFAN(lfq,
                      add.values = TRUE,
                      rsa.colors = terrain.colors(20),
                      plot_title = TRUE)
+```
 
+```
+## Optimisation procuedure of ELEFAN is running. 
+## This will take some time. 
+## The process bar will inform you about the process of the calculations.
+```
+
+``` r
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA_5 <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
@@ -394,7 +470,20 @@ res_SA_5 <- ELEFAN_SA(lfq,
                     up_par = up_par,     # Limites superiores comunes
                     plot = FALSE,
                     plot.score = TRUE)
+```
 
+```
+## Simulated annealing is running. 
+## This will take approximately 0.5 minutes.
+## timeSpan = 30.001248 maxTime = 30
+## Emini is: -0.1435001352
+## xmini are:
+## 7.675341436 0.392098701 0.658589121 0.07986231521 0.3594472557 
+## Totally it used 30.001346 secs
+## No. of function call is: 2671
+```
+
+``` r
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA_5 <- ELEFAN_GA(lfq,
                     MA = 5,
@@ -406,13 +495,19 @@ res_GA_5 <- ELEFAN_GA(lfq,
                     up_par = up_par,    # Limites superiores comunes
                     monitor = FALSE,
                     plot = FALSE)
+```
 
 ```
+## Genetic algorithm is running. This might take some time.
+```
+
+<img src="index_files/figure-html/unnamed-chunk-12-1.jpeg" style="display: block; margin: auto;" />
 
 Extraigo los parámetros para cada escenario de estimación.
 
 
-```{r}
+
+``` r
 # made table
 SI <- unlist(res_simple$par)
 GA <- unlist(res_GA$par)
@@ -425,7 +520,8 @@ SA5 <- unlist(res_SA_5$par)
 
 Construyo las tablas para estimación con max age = 26
 
-```{r}
+
+``` r
 # join 
 t_k_linf_m <- rbind(GA[1:2],
                   SA[1:2],
@@ -457,9 +553,43 @@ total_r_m  %>%
                                   "condensed"),
                 full_width = FALSE)
 ```
+
+<table class="table" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>Parametres LH to O. edulis with 26 age max</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> METHOD </th>
+   <th style="text-align:right;"> L_inf </th>
+   <th style="text-align:right;"> K </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> GA </td>
+   <td style="text-align:right;"> 7.417 </td>
+   <td style="text-align:right;"> 0.1160000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> SA </td>
+   <td style="text-align:right;"> 7.135 </td>
+   <td style="text-align:right;"> 0.1000000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Simple </td>
+   <td style="text-align:right;"> 7.600 </td>
+   <td style="text-align:right;"> 0.0800000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mean </td>
+   <td style="text-align:right;"> 7.384 </td>
+   <td style="text-align:right;"> 0.0986667 </td>
+  </tr>
+</tbody>
+</table>
 Construyo las tablas para estimación con max age = 5
 
-```{r}
+
+``` r
 # join 
 t_k_linf_5 <- rbind(GA5[1:2],
                   SA5[1:2],
@@ -491,12 +621,46 @@ total_r_m_5  %>%
                                   "condensed"),
                 full_width = FALSE)
 ```
+
+<table class="table" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>Parametres LH to O. edulis with 26 age max</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> METHOD </th>
+   <th style="text-align:right;"> L_inf </th>
+   <th style="text-align:right;"> K </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> GA </td>
+   <td style="text-align:right;"> 7.465 </td>
+   <td style="text-align:right;"> 0.462 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> SA </td>
+   <td style="text-align:right;"> 7.675 </td>
+   <td style="text-align:right;"> 0.392 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Simple </td>
+   <td style="text-align:right;"> 7.000 </td>
+   <td style="text-align:right;"> 0.520 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mean </td>
+   <td style="text-align:right;"> 7.380 </td>
+   <td style="text-align:right;"> 0.458 </td>
+  </tr>
+</tbody>
+</table>
 Made VB curves by methot and strata by male
 
 separated group
 
 
-```{r}
+
+``` r
 t_k_linf_sep <- total_r_m %>% 
    separate(group, into = c("METHOD"), sep = " ")
 
@@ -509,7 +673,8 @@ Generar curvas de crecimiento con estimados.
 
 Primero creo la funcide crecimiento de VB comun para ambos cálculos
 
-```{r}
+
+``` r
 # Definir la función de Von Bertalanffy
 von_bertalanffy <- function(t, L_inf, K) {
   L_inf * (1 - exp(-K * (t-t0)))
@@ -519,7 +684,8 @@ von_bertalanffy <- function(t, L_inf, K) {
 
 Curvas para estimaciones basadas en age Max 26
 
-```{r}
+
+``` r
 # Generar una secuencia de tiempos (por ejemplo, de 0 a 26 años)
 t0 <- -0.3
 time <- seq(0, 26, by = 1)
@@ -544,14 +710,13 @@ age26 <- ggplot(df_curves,
   theme_few()+
   scale_colour_viridis_d(option="C",
                          name="Method")
-
 ```
 
 
 AHora Curvas para estimaciones basadas en age Max 5
 
-```{r}
 
+``` r
 # Generar una secuencia de tiempos (por ejemplo, de 0 a 5 años)
 t0 <- -0.3
 time <- seq(0, 5, by = 0.1)
@@ -576,17 +741,18 @@ age5 <- ggplot(df_curves_5,
   theme_few()+
   scale_colour_viridis_d(option="C",
                          name="Method")
-
-
 ```
 
 both plot
 
-```{r}
+
+``` r
 ggarrange(age26, age5, common.legend = TRUE,
           ncol=1,
           legend="bottom")
 ```
+
+<img src="index_files/figure-html/unnamed-chunk-20-1.jpeg" style="display: block; margin: auto;" />
 
 
 # Mortalidad Natural para *O. edulis*
@@ -595,7 +761,8 @@ En este cálculo de Mortalidasd natural mediante diferentes metodos bioanalogico
 
 Primero en parametros con edades de 26
 
-```{r}
+
+``` r
 # use the function M_empirical to estimate natural mortality
 M26 <- M_empirical(Linf = t_k_linf_sep$L_inf[4], K_l = t_k_linf_sep$K[4], 
                      tmax = 28, 
@@ -622,7 +789,8 @@ M26 <- M_empirical(Linf = t_k_linf_sep$L_inf[4], K_l = t_k_linf_sep$K[4],
 
 Ahora calculo M con parámetros con edades de 5
 
-```{r}
+
+``` r
 # use the function M_empirical to estimate natural mortality
 M5 <- M_empirical(Linf = t_k_linf_sep_5$L_inf[4], K_l = t_k_linf_sep_5$K[4], 
                   tmax = 28, 
@@ -648,7 +816,8 @@ M5 <- M_empirical(Linf = t_k_linf_sep_5$L_inf[4], K_l = t_k_linf_sep_5$K[4],
 
 Junto las bases y saco el promedio
 
-```{r}
+
+``` r
 # junto las bases
 
 Total_M <- cbind(M5, M26)
@@ -658,7 +827,8 @@ Total_M_Mean <- rbind(Total_M, Mean = mean_m)
 ```
 Hago la Tabla
 
-```{r}
+
+``` r
 Total_M_Mean  %>%
   kbl(booktabs = T,
       position="ht!",
@@ -666,12 +836,95 @@ Total_M_Mean  %>%
   kable_styling(latex_options = c("striped",
                                   "condensed"),
                 full_width = FALSE)
-
 ```
+
+<table class="table" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>Estimated M by age</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:right;"> Age Max 5 </th>
+   <th style="text-align:right;"> age Max 26 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Alverson and Carney (1975) </td>
+   <td style="text-align:right;"> 0.0110 </td>
+   <td style="text-align:right;"> 0.1590 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Gunderson and Dygert (1988) </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Hoenig (1983) - Joint Equation </td>
+   <td style="text-align:right;"> 0.1600 </td>
+   <td style="text-align:right;"> 0.1600 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Hoenig (1983) - Fish Equation </td>
+   <td style="text-align:right;"> 0.1490 </td>
+   <td style="text-align:right;"> 0.1490 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Lorenzen (1996) </td>
+   <td style="text-align:right;"> 0.5750 </td>
+   <td style="text-align:right;"> 0.5750 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Pauly (1980) - Length Equation </td>
+   <td style="text-align:right;"> 1.2910 </td>
+   <td style="text-align:right;"> 0.4730 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Peterson and Wroblewski (1984) </td>
+   <td style="text-align:right;"> 0.4860 </td>
+   <td style="text-align:right;"> 0.4860 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Rikhter and Efanov (1976) </td>
+   <td style="text-align:right;"> 0.7680 </td>
+   <td style="text-align:right;"> 0.7680 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Roff (1984) </td>
+   <td style="text-align:right;"> 0.9160 </td>
+   <td style="text-align:right;"> 1.3570 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Then (2015) - tmax </td>
+   <td style="text-align:right;"> 0.2310 </td>
+   <td style="text-align:right;"> 0.2310 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Then (2015) - growth </td>
+   <td style="text-align:right;"> 1.2040 </td>
+   <td style="text-align:right;"> 0.3930 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mean </td>
+   <td style="text-align:right;"> 0.5791 </td>
+   <td style="text-align:right;"> 0.4751 </td>
+  </tr>
+</tbody>
+</table>
 
 Manipulo para hacer los plots
 
-```{r}
+
+``` r
 df_M <- as.data.frame(Total_M_Mean)
 
 df_M$Method <- rownames(Total_M_Mean)
@@ -684,7 +937,8 @@ df_long <- df_M %>%
 
 ahora una vizualización simple
 
-```{r}
+
+``` r
 # Dot Plot
 m_plot <- ggplot(df_long %>% 
                    drop_na() %>% 
@@ -709,13 +963,15 @@ m_plot <- ggplot(df_long %>%
   ylim(0, 1.5)
 
 m_plot
-
 ```
+
+<img src="index_files/figure-html/unnamed-chunk-26-1.jpeg" style="display: block; margin: auto;" />
 
 
 Statistical diferences betweenm (work in progress)
 
-```{r eval=FALSE}
+
+``` r
 # Realizar la prueba ANOVA
 anova_result <- aov(Value ~ Stratum, data = df_long_male %>% drop_na())
 summary(anova_result)
@@ -743,9 +999,6 @@ kbl(tukey_table,
                 html_font = "Cambria") |> 
   kable_styling(bootstrap_options = "striped", 
                 latex_options = "striped")
-
-
-
 ```
 
 
