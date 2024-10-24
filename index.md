@@ -27,23 +27,14 @@ editor_options:
 ---
 
 
+# Contexto
 
-``` r
-rm(list = ls())
-set.seed(9)
-knitr::opts_chunk$set(echo = TRUE,
-                      message = FALSE,
-                      warning = FALSE,
-                      fig.align = 'center',
-                      fig.width = 7,
-                      fig.height = 5,
-                      dev = 'jpeg',
-                      dpi = 300)
-#XQuartz is a mess, put this in your onload to default to cairo instead
-options(bitmapType = "cairo") 
-# (https://github.com/tidyverse/ggplot2/issues/2655)
-# Lo mapas se hacen mas rapido
-```
+
+En este estudio, presentamos un enfoque metodológico para la estimación de parámetros clave de la historia de vida, como la longitud asintótica ($L_{\infty}$), el coeficiente de crecimiento ($K$) y la mortalidad natural ($M$), para la ostra europea *Ostrea edulis*, utilizando datos experimentales del proyecto Resalar llevado a cabo en el Mar Menor por el Instituto Español de Oceanografía (IEO) en Murcia. A partir de datos de frecuencia de longitudes recolectados durante el periodo experimental comprendido entre los años 2023 y 2024, aplicamos métodos metodos de Analisis de Progresión Modal usando ELEFAN [@Gayanilo2005] para ajustar curvas de crecimiento y estimar los parámetros de crecimiento. Con estos parametros, utilizamos una serie de metodos bioanalogogicos para calcular las tasas de mortalidad natural de la especie basada en escenarios de edad máxima.. 
+
+Nuestros resultados proporcionan una visión de la dinámica de crecimiento de *Ostrea edulis* en este entorno lagunar y experimental, lo cual es fundamental para entender la dínamica del crecimiento de la especie. La combinación de diferentes métodos permite una comparación robusta de los parámetros estimados, contribuyendo a una mejor comprensión de los rasgos de la historia de vida de esta especie bajo las condiciones ambientales específicas del Mar Menor.
+
+
 
 # Cargar paquetes necesarios para la estimacion y vizualización.
 
@@ -396,12 +387,12 @@ res_SA <- ELEFAN_SA(lfq,
 ```
 ## Simulated annealing is running. 
 ## This will take approximately 0.5 minutes.
-## timeSpan = 30.006736 maxTime = 30
+## timeSpan = 30.013727 maxTime = 30
 ## Emini is: -0.1913507391
 ## xmini are:
 ## 7.13536267 0.1001415238 0.4662450179 0.6397465542 0.8242201749 
-## Totally it used 30.006838 secs
-## No. of function call is: 885
+## Totally it used 30.013848 secs
+## No. of function call is: 859
 ```
 
 ``` r
@@ -475,12 +466,12 @@ res_SA_5 <- ELEFAN_SA(lfq,
 ```
 ## Simulated annealing is running. 
 ## This will take approximately 0.5 minutes.
-## timeSpan = 30.001248 maxTime = 30
+## timeSpan = 30.021757 maxTime = 30
 ## Emini is: -0.1435001352
 ## xmini are:
 ## 7.675341436 0.392098701 0.658589121 0.07986231521 0.3594472557 
-## Totally it used 30.001346 secs
-## No. of function call is: 2671
+## Totally it used 30.021891 secs
+## No. of function call is: 2677
 ```
 
 ``` r
@@ -954,7 +945,7 @@ m_plot <- ggplot(df_long %>%
                   box.padding = 0.5,   
                  
                   direction = "x") +  # Alinea las etiquetas horizontalmente
-  labs(title = "Female",
+  labs(title = "Estimating M in O. edulis by Age Max",
        x = "",
        y = "Natural Mortality",
        fill = "Method") +
@@ -971,35 +962,6 @@ m_plot
 Statistical diferences betweenm (work in progress)
 
 
-``` r
-# Realizar la prueba ANOVA
-anova_result <- aov(Value ~ Stratum, data = df_long_male %>% drop_na())
-summary(anova_result)
-# Realizar la prueba post hoc de Tukey
-tukey_result <- TukeyHSD(anova_result)
-# Convertir los resultados de Tukey a un data frame
-tukey_df <- as.data.frame(tukey_result$Stratum)
-tukey_df$pair <- rownames(tukey_df)
-tukey_df <- tukey_df %>%
-  mutate(Stratum1 = sapply(strsplit(pair, "-"), `[`, 1),
-         Stratum2 = sapply(strsplit(pair, "-"), `[`, 2))
-
-# Seleccionar las columnas relevantes
-tukey_table <- tukey_df %>%
-  dplyr::select(Stratum1, Stratum2, diff, `p adj`, `lwr`, `upr`) %>%
-  rename(Difference = diff, 
-         P_value = `p adj`, 
-         Lower_CI = `lwr`, 
-         Upper_CI = `upr`)
-
-
-kbl(tukey_table, 
-    caption = "Test to differences between strata")  |> 
-  kable_classic(full_width = F, 
-                html_font = "Cambria") |> 
-  kable_styling(bootstrap_options = "striped", 
-                latex_options = "striped")
-```
 
 
 # Referencias

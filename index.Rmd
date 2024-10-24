@@ -27,7 +27,14 @@ editor_options:
 ---
 
 
-```{r setup1}
+# Contexto
+
+
+En este estudio, presentamos un enfoque metodológico para la estimación de parámetros clave de la historia de vida, como la longitud asintótica ($L_{\infty}$), el coeficiente de crecimiento ($K$) y la mortalidad natural ($M$), para la ostra europea *Ostrea edulis*, utilizando datos experimentales del proyecto Resalar llevado a cabo en el Mar Menor por el Instituto Español de Oceanografía (IEO) en Murcia. A partir de datos de frecuencia de longitudes recolectados durante el periodo experimental comprendido entre los años 2023 y 2024, aplicamos métodos metodos de Analisis de Progresión Modal usando ELEFAN [@Gayanilo2005] para ajustar curvas de crecimiento y estimar los parámetros de crecimiento. Con estos parametros, utilizamos una serie de metodos bioanalogogicos para calcular las tasas de mortalidad natural de la especie basada en escenarios de edad máxima.. 
+
+Nuestros resultados proporcionan una visión de la dinámica de crecimiento de *Ostrea edulis* en este entorno lagunar y experimental, lo cual es fundamental para entender la dínamica del crecimiento de la especie. La combinación de diferentes métodos permite una comparación robusta de los parámetros estimados, contribuyendo a una mejor comprensión de los rasgos de la historia de vida de esta especie bajo las condiciones ambientales específicas del Mar Menor.
+
+```{r setup1, echo=FALSE}
 rm(list = ls())
 set.seed(9)
 knitr::opts_chunk$set(echo = TRUE,
@@ -684,7 +691,7 @@ df_long <- df_M %>%
 
 ahora una vizualización simple
 
-```{r}
+```{r fig.width=7}
 # Dot Plot
 m_plot <- ggplot(df_long %>% 
                    drop_na() %>% 
@@ -700,7 +707,7 @@ m_plot <- ggplot(df_long %>%
                   box.padding = 0.5,   
                  
                   direction = "x") +  # Alinea las etiquetas horizontalmente
-  labs(title = "Female",
+  labs(title = "Estimating M in O. edulis by Age Max",
        x = "",
        y = "Natural Mortality",
        fill = "Method") +
@@ -715,7 +722,7 @@ m_plot
 
 Statistical diferences betweenm (work in progress)
 
-```{r eval=FALSE}
+```{r eval=FALSE, echo = FALSE}
 # Realizar la prueba ANOVA
 anova_result <- aov(Value ~ Stratum, data = df_long_male %>% drop_na())
 summary(anova_result)
