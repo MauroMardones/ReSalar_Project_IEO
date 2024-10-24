@@ -46,6 +46,10 @@ install.packages(c("tidyverse", "kableExtra", "ggplot2", "nlme"))
 2. Load the `data_cleaning.R` script to preprocess the raw data.
 3. Run the `parameter_estimation.R` script to estimate life history parameters.
 
+### Results
+
+principal oytpus and results can be found in this link: 
+
 ### Authors and Acknowledgments
 
 This project was conducted by researchers from the IEO of Murcia and IEO of Cádiz. We thank all participants and collaborators for their contributions.
