@@ -2,7 +2,7 @@
 title: "Derive Life story Parameters and natural mortality rates for Ostrea edulis to Minor Sea, Murcia, Spain"
 subtitle: "Project ReSalar"
 author: "Mardones, M; Delgado, Alcaraz, R; Albentosa, M"
-date:  "24 October, 2024"
+date:  "25 October, 2024"
 bibliography: param.bib
 csl: apa.csl
 link-citations: yes
@@ -347,7 +347,7 @@ res_simple <- ELEFAN(lfq,
                      K_range = K_range, # Coincide con otros métodos
                      C = 0,  # Estacionalidad
                      ts = 0.5, # Valor inicial de ts
-                     MA = 5,
+                     MA = 1,
                      addl.sqrt = FALSE,
                      agemax = 26,
                      flagging.out = TRUE,
@@ -373,7 +373,7 @@ res_simple <- ELEFAN(lfq,
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
-                    MA = 5,
+                    MA = 1,
                     agemax = 26,
                     seasonalised = TRUE,  # Estacionalidad activada
                     addl.sqrt = FALSE,
@@ -387,18 +387,18 @@ res_SA <- ELEFAN_SA(lfq,
 ```
 ## Simulated annealing is running. 
 ## This will take approximately 0.5 minutes.
-## timeSpan = 30.012224 maxTime = 30
-## Emini is: -0.1913507391
+## timeSpan = 30.023313 maxTime = 30
+## Emini is: -0.4166288316
 ## xmini are:
-## 7.13536267 0.1001415238 0.4662450179 0.6397465542 0.8242201749 
-## Totally it used 30.012317 secs
-## No. of function call is: 910
+## 7.721172084 0.1092790548 0.6672459496 0.9456267171 0.449311425 
+## Totally it used 30.023414 secs
+## No. of function call is: 883
 ```
 
 ``` r
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA <- ELEFAN_GA(lfq,
-                    MA = 5,
+                    MA = 1,
                     seasonalised = TRUE,  # Estacionalidad activada
                     maxiter = 50,
                     agemax = 26,
@@ -426,7 +426,7 @@ res_simple_5 <- ELEFAN(lfq,
                      K_range = K_range, # Coincide con otros métodos
                      C = 0,  # Estacionalidad
                      ts = 0.5, # Valor inicial de ts
-                     MA = 5,
+                     MA = 1,
                      addl.sqrt = FALSE,
                      agemax = 5,
                      flagging.out = TRUE,
@@ -452,7 +452,7 @@ res_simple_5 <- ELEFAN(lfq,
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA_5 <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
-                    MA = 5,
+                    MA = 1,
                     agemax = 5,
                     seasonalised = TRUE,  # Estacionalidad activada
                     addl.sqrt = FALSE,
@@ -466,18 +466,18 @@ res_SA_5 <- ELEFAN_SA(lfq,
 ```
 ## Simulated annealing is running. 
 ## This will take approximately 0.5 minutes.
-## timeSpan = 30.002977 maxTime = 30
-## Emini is: -0.1435001352
+## timeSpan = 30.004123 maxTime = 30
+## Emini is: -0.2951262403
 ## xmini are:
-## 7.675341436 0.392098701 0.658589121 0.07986231521 0.3594472557 
-## Totally it used 30.003128 secs
-## No. of function call is: 2518
+## 7.030942708 0.2404789891 0.4903380871 0.8204449639 0.5894297063 
+## Totally it used 30.00422 secs
+## No. of function call is: 2705
 ```
 
 ``` r
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA_5 <- ELEFAN_GA(lfq,
-                    MA = 5,
+                    MA = 1,
                     seasonalised = TRUE,  # Estacionalidad activada
                     maxiter = 50,
                     agemax = 5,
@@ -557,23 +557,23 @@ total_r_m  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> GA </td>
-   <td style="text-align:right;"> 7.417 </td>
-   <td style="text-align:right;"> 0.1160000 </td>
+   <td style="text-align:right;"> 7.006000 </td>
+   <td style="text-align:right;"> 0.1170000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> SA </td>
-   <td style="text-align:right;"> 7.135 </td>
-   <td style="text-align:right;"> 0.1000000 </td>
+   <td style="text-align:right;"> 7.721000 </td>
+   <td style="text-align:right;"> 0.1090000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Simple </td>
-   <td style="text-align:right;"> 7.600 </td>
-   <td style="text-align:right;"> 0.0800000 </td>
+   <td style="text-align:right;"> 7.400000 </td>
+   <td style="text-align:right;"> 0.0400000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 7.384 </td>
-   <td style="text-align:right;"> 0.0986667 </td>
+   <td style="text-align:right;"> 7.375667 </td>
+   <td style="text-align:right;"> 0.0886667 </td>
   </tr>
 </tbody>
 </table>
@@ -625,23 +625,23 @@ total_r_m_5  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> GA </td>
-   <td style="text-align:right;"> 7.465 </td>
-   <td style="text-align:right;"> 0.462 </td>
+   <td style="text-align:right;"> 7.459000 </td>
+   <td style="text-align:right;"> 0.6980000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> SA </td>
-   <td style="text-align:right;"> 7.675 </td>
-   <td style="text-align:right;"> 0.392 </td>
+   <td style="text-align:right;"> 7.031000 </td>
+   <td style="text-align:right;"> 0.2400000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Simple </td>
-   <td style="text-align:right;"> 7.000 </td>
-   <td style="text-align:right;"> 0.520 </td>
+   <td style="text-align:right;"> 8.000000 </td>
+   <td style="text-align:right;"> 0.2300000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 7.380 </td>
-   <td style="text-align:right;"> 0.458 </td>
+   <td style="text-align:right;"> 7.496667 </td>
+   <td style="text-align:right;"> 0.3893333 </td>
   </tr>
 </tbody>
 </table>
@@ -841,8 +841,8 @@ Total_M_Mean  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> Alverson and Carney (1975) </td>
-   <td style="text-align:right;"> 0.0110 </td>
-   <td style="text-align:right;"> 0.1590 </td>
+   <td style="text-align:right;"> 0.0190 </td>
+   <td style="text-align:right;"> 0.1700 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Gunderson and Dygert (1988) </td>
@@ -866,8 +866,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Pauly (1980) - Length Equation </td>
-   <td style="text-align:right;"> 1.2910 </td>
-   <td style="text-align:right;"> 0.4730 </td>
+   <td style="text-align:right;"> 1.1560 </td>
+   <td style="text-align:right;"> 0.4410 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Peterson and Wroblewski (1984) </td>
@@ -881,8 +881,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Roff (1984) </td>
-   <td style="text-align:right;"> 0.9160 </td>
-   <td style="text-align:right;"> 1.3570 </td>
+   <td style="text-align:right;"> 0.9910 </td>
+   <td style="text-align:right;"> 1.3710 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Then (2015) - tmax </td>
@@ -891,8 +891,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Then (2015) - growth </td>
-   <td style="text-align:right;"> 1.2040 </td>
-   <td style="text-align:right;"> 0.3930 </td>
+   <td style="text-align:right;"> 1.0640 </td>
+   <td style="text-align:right;"> 0.3630 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
@@ -906,8 +906,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 0.5791 </td>
-   <td style="text-align:right;"> 0.4751 </td>
+   <td style="text-align:right;"> 0.5599 </td>
+   <td style="text-align:right;"> 0.4714 </td>
   </tr>
 </tbody>
 </table>

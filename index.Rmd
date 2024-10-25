@@ -322,7 +322,7 @@ res_simple <- ELEFAN(lfq,
                      K_range = K_range, # Coincide con otros métodos
                      C = 0,  # Estacionalidad
                      ts = 0.5, # Valor inicial de ts
-                     MA = 5,
+                     MA = 1,
                      addl.sqrt = FALSE,
                      agemax = 26,
                      flagging.out = TRUE,
@@ -340,7 +340,7 @@ res_simple <- ELEFAN(lfq,
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
-                    MA = 5,
+                    MA = 1,
                     agemax = 26,
                     seasonalised = TRUE,  # Estacionalidad activada
                     addl.sqrt = FALSE,
@@ -352,7 +352,7 @@ res_SA <- ELEFAN_SA(lfq,
 
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA <- ELEFAN_GA(lfq,
-                    MA = 5,
+                    MA = 1,
                     seasonalised = TRUE,  # Estacionalidad activada
                     maxiter = 50,
                     agemax = 26,
@@ -374,7 +374,7 @@ res_simple_5 <- ELEFAN(lfq,
                      K_range = K_range, # Coincide con otros métodos
                      C = 0,  # Estacionalidad
                      ts = 0.5, # Valor inicial de ts
-                     MA = 5,
+                     MA = 1,
                      addl.sqrt = FALSE,
                      agemax = 5,
                      flagging.out = TRUE,
@@ -392,7 +392,7 @@ res_simple_5 <- ELEFAN(lfq,
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA_5 <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
-                    MA = 5,
+                    MA = 1,
                     agemax = 5,
                     seasonalised = TRUE,  # Estacionalidad activada
                     addl.sqrt = FALSE,
@@ -404,7 +404,7 @@ res_SA_5 <- ELEFAN_SA(lfq,
 
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA_5 <- ELEFAN_GA(lfq,
-                    MA = 5,
+                    MA = 1,
                     seasonalised = TRUE,  # Estacionalidad activada
                     maxiter = 50,
                     agemax = 5,

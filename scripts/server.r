@@ -17,29 +17,29 @@ library(readxl)
 library(shiny)
 library(gt)
 
-# Definir parámetros iniciales para Simulated Annealing (SA)
-low_par <- list(Linf = 7.0, K = 0.1, t_anchor = 0, C = 0, ts = 0)
-up_par <- list(Linf = 8.0, K = 0.9, t_anchor = 1, C = 1, ts = 1)
-init_par <- list(Linf = 7.5, K = 0.5, t_anchor = 0.5, C = 0.5, ts = 0.5)
 
-
-# Definir el servidor
+#  Definir el servidor
 server <- function(input, output) {
   
   # Ejecutar ELEFAN_SA cuando se presiona el botón
   observeEvent(input$run, {
     
-    # Ejecutar ELEFAN_SA con el agemax que selecciona el usuario
+    # Obtener los parámetros configurados por el usuario
+    init_par <- list(Linf = input$init_Linf, K = input$init_K, t_anchor = input$init_t_anchor, C = input$init_C, ts = input$init_ts)
+    low_par <- list(Linf = input$Linf_range[1], K = input$K_range[1], t_anchor = input$t_anchor_range[1], C = input$C_range[1], ts = input$ts_range[1])
+    up_par <- list(Linf = input$Linf_range[2], K = input$K_range[2], t_anchor = input$t_anchor_range[2], C = input$C_range[2], ts = input$ts_range[2])
+    
+    # Ejecutar ELEFAN_SA con los parámetros configurados por el usuario
     res_SA_5 <- ELEFAN_SA(
-      lfq = lfq,
-      SA_time = 60 * 0.5,   # Duración de Simulated Annealing
-      MA = 5,               # Media móvil
-      agemax = input$agemax, # Usar el valor de entrada
-      seasonalised = TRUE,   # Estacionalidad activada
+      lfq = lfq,              # Usar tus datos
+      SA_time = 60 * 0.5,     # Duración de Simulated Annealing
+      MA = 5,                 # Media móvil
+      agemax = as.numeric(input$agemax), # Usar agemax seleccionado
+      seasonalised = TRUE,    # Estacionalidad activada
       addl.sqrt = FALSE,
-      init_par = init_par,   # Valores iniciales
-      low_par = low_par,     # Límites inferiores
-      up_par = up_par,       # Límites superiores
+      init_par = init_par,    # Valores iniciales personalizados
+      low_par = low_par,      # Límites inferiores personalizados
+      up_par = up_par,        # Límites superiores personalizados
       plot = FALSE,
       plot.score = TRUE
     )
