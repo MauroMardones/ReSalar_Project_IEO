@@ -1,6 +1,6 @@
 ---
-title: "Derive Life story Parameters and natural mortality rates for Ostrea edulis to Minor Sea, Murcia, Spain"
-subtitle: "Project ReSalar"
+title: "Derivar parámetros de la historia de vida y tasas de mortalidad natural para Ostrea edulis en el Mar Menor, Murcia, España"
+subtitle: "Proyecto ReSalar"
 author: "Mardones, M; Delgado, Alcaraz, R; Albentosa, M"
 date:  "`r format(Sys.time(), '%d %B, %Y')`"
 bibliography: param.bib
@@ -59,7 +59,7 @@ Un aspecto clave en el análisis de las poblaciones marinas y su dinámica es co
 Primero, calculamos \( L_{\infty} \) (longitud asintótica) y \( K \) (tasa de crecimiento) mediante un proceso conocido como Análisis de Progresión Modal. El **análisis de progresión modal** consiste en vincular los picos de la frecuencia de longitud muestreada en tiempos conocidos (\( t_1, t_2 \)) mediante incrementos de crecimiento (Figura \@ref(fig:1)).
 
 ```{r 1, echo=FALSE, out.width="50%", fig.cap= "Ejemplo esquemático del Análisis de Progresión Modal."}
-knitr::include_graphics("Figs/3.png") 
+knitr::include_graphics("Figs/2.png") 
 ```
 Luego se ajustan las curvas mediante el Análisis Electrónico de Frecuencia de Longitud (ELEFAN). El **Análisis Electrónico de Frecuencia de Longitud** (ELEFAN) [@Gayanilo1997]  tiene como objetivo buscar una curva de crecimiento que se ajuste a los picos de los datos de frecuencia de longitud, logrando un ajuste óptimo, similar a los parámetros de una regresión lineal. En este caso se buscan los momentos de crecimiento positivo y negativo de la población  (Figura \@ref(fig:2)). Para ello, utilizamos tres algoritmos de ajuste, incluyendo:
 
@@ -69,7 +69,7 @@ Luego se ajustan las curvas mediante el Análisis Electrónico de Frecuencia de 
 
 
 ```{r 2, echo=FALSE, out.width="50%", fig.cap= "Metodos de ajustes para ELEFAN"}
-knitr::include_graphics("Figs/2.png") 
+knitr::include_graphics("Figs/3.png") 
 ```
 
 
@@ -506,11 +506,15 @@ total_r <- as.data.frame(round(t_k_linf_m,3))
 t_k_linf_total <- as_tibble(total_r, rownames = "group")
 
 # Calculo medias
-total_r_m <- t_k_linf_total %>% 
+total_r_m <- t_k_linf_total %>%
   bind_rows(
-    tibble(group = "Mean",
-           L_inf = mean(t_k_linf_total$L_inf),
-           K = mean(t_k_linf_total$K))
+    tibble(
+      group = "Mean",
+      L_inf = mean(t_k_linf_total$L_inf),
+      sd_L_inf = sd(t_k_linf_total$L_inf),
+      K = mean(t_k_linf_total$K),
+      sd_K = sd(t_k_linf_total$K)           
+    )
   )
 
 total_r_m  %>%
@@ -540,11 +544,15 @@ total_r_5 <- as.data.frame(round(t_k_linf_5,3))
 t_k_linf_total_5 <- as_tibble(total_r_5, rownames = "group")
 
 # Calculo medias
-total_r_m_5 <- t_k_linf_total_5 %>% 
+total_r_m_5 <- t_k_linf_total_5 %>%
   bind_rows(
-    tibble(group = "Mean",
-           L_inf = mean(t_k_linf_total_5$L_inf),
-           K = mean(t_k_linf_total_5$K))
+    tibble(
+      group = "Mean",
+      L_inf = mean(t_k_linf_total_5$L_inf),
+       sd_L_inf = sd(t_k_linf_total_5$L_inf),
+      K = mean(t_k_linf_total_5$K),
+      sd_K = sd(t_k_linf_total_5$K)           
+    )
   )
 
 total_r_m_5  %>%
@@ -602,13 +610,18 @@ age26 <- ggplot(df_curves,
                aes(x = time, 
                               y = length,
                               colour=METHOD)) +
+  geom_point()+
   geom_line()+
   labs(title = "Estimation with 26 Age Max",
        x = "years",
        y = "Length (mm)") +
   theme_few()+
   scale_colour_viridis_d(option="C",
-                         name="Method")
+                         name="Method")+
+  scale_x_continuous(breaks = seq(min(df_curves$time), 
+                                  max(df_curves$time), 
+                                  by = 1))  # Ajusta el intervalo según sea necesario
+
 
 ```
 
@@ -635,13 +648,16 @@ age5 <- ggplot(df_curves_5,
                               y = length,
                               colour=METHOD)) +
   geom_line()+
+  geom_point()+
  labs(title = "Estimation with 5 Age Max",
        x = "years",
        y = "Length (mm)") +
   theme_few()+
   scale_colour_viridis_d(option="C",
-                         name="Method")
-
+                         name="Method")+
+   scale_x_continuous(breaks = seq(min(df_curves$time), 
+                                  max(df_curves$time), 
+                                  by = 0.5))
 
 ```
 
@@ -649,7 +665,7 @@ both plot
 
 ```{r}
 ggarrange(age26, age5, common.legend = TRUE,
-          ncol=1,
+          ncol=2,
           legend="bottom")
 ```
 
@@ -805,18 +821,25 @@ Junto las bases y saco el promedio
 Total_M <- cbind(M5, M26)
 colnames(Total_M) <- c("Age Max 5", "age Max 26")
 mean_m <- colMeans(Total_M, na.rm = TRUE)
-Total_M_Mean <- rbind(Total_M, Mean = mean_m)
+sd_m <- apply(Total_M, 2, sd, na.rm = TRUE)  
+Total_M_Mean <- rbind(Total_M, 
+                      Mean = round(mean_m, 3), 
+                      SD = round(sd_m, 3))  
+
 ```
 Hago la Tabla
 
 ```{r}
-Total_M_Mean  %>%
-  kbl(booktabs = T,
-      position="ht!",
-    caption = "Estimated M w/ different age") %>%
-  kable_styling(latex_options = c("striped",
-                                  "condensed"),
-                full_width = FALSE)
+Total_M_Mean %>% 
+  kbl(booktabs = TRUE,
+      position = "ht!",
+      caption = "Estimated M w/ different age") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                full_width = FALSE) %>% 
+  pack_rows("Resumen", 
+            start_row = nrow(Total_M_Mean) - 1, 
+            end_row = nrow(Total_M_Mean),
+            bold = TRUE)
 
 ```
 

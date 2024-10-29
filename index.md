@@ -1,6 +1,6 @@
 ---
-title: "Derive Life story Parameters and natural mortality rates for Ostrea edulis to Minor Sea, Murcia, Spain"
-subtitle: "Project ReSalar"
+title: "Derivar parámetros de la historia de vida y tasas de mortalidad natural para Ostrea edulis en el Mar Menor, Murcia, España"
+subtitle: "Proyecto ReSalar"
 author: "Mardones, M; Delgado, Alcaraz, R; Albentosa, M"
 date:  "29 October, 2024"
 bibliography: param.bib
@@ -44,7 +44,7 @@ Un aspecto clave en el análisis de las poblaciones marinas y su dinámica es co
 Primero, calculamos \( L_{\infty} \) (longitud asintótica) y \( K \) (tasa de crecimiento) mediante un proceso conocido como Análisis de Progresión Modal. El **análisis de progresión modal** consiste en vincular los picos de la frecuencia de longitud muestreada en tiempos conocidos (\( t_1, t_2 \)) mediante incrementos de crecimiento (Figura \@ref(fig:1)).
 
 <div class="figure" style="text-align: center">
-<img src="Figs/3.png" alt="Ejemplo esquemático del Análisis de Progresión Modal." width="50%" />
+<img src="Figs/2.png" alt="Ejemplo esquemático del Análisis de Progresión Modal." width="50%" />
 <p class="caption">Ejemplo esquemático del Análisis de Progresión Modal.</p>
 </div>
 Luego se ajustan las curvas mediante el Análisis Electrónico de Frecuencia de Longitud (ELEFAN). El **Análisis Electrónico de Frecuencia de Longitud** (ELEFAN) [@Gayanilo1997]  tiene como objetivo buscar una curva de crecimiento que se ajuste a los picos de los datos de frecuencia de longitud, logrando un ajuste óptimo, similar a los parámetros de una regresión lineal. En este caso se buscan los momentos de crecimiento positivo y negativo de la población  (Figura \@ref(fig:2)). Para ello, utilizamos tres algoritmos de ajuste, incluyendo:
@@ -55,7 +55,7 @@ Luego se ajustan las curvas mediante el Análisis Electrónico de Frecuencia de 
 
 
 <div class="figure" style="text-align: center">
-<img src="Figs/2.png" alt="Metodos de ajustes para ELEFAN" width="50%" />
+<img src="Figs/3.png" alt="Metodos de ajustes para ELEFAN" width="50%" />
 <p class="caption">Metodos de ajustes para ELEFAN</p>
 </div>
 
@@ -532,11 +532,15 @@ total_r <- as.data.frame(round(t_k_linf_m,3))
 t_k_linf_total <- as_tibble(total_r, rownames = "group")
 
 # Calculo medias
-total_r_m <- t_k_linf_total %>% 
+total_r_m <- t_k_linf_total %>%
   bind_rows(
-    tibble(group = "Mean",
-           L_inf = mean(t_k_linf_total$L_inf),
-           K = mean(t_k_linf_total$K))
+    tibble(
+      group = "Mean",
+      L_inf = mean(t_k_linf_total$L_inf),
+      sd_L_inf = sd(t_k_linf_total$L_inf),
+      K = mean(t_k_linf_total$K),
+      sd_K = sd(t_k_linf_total$K)           
+    )
   )
 
 total_r_m  %>%
@@ -556,6 +560,8 @@ total_r_m  %>%
    <th style="text-align:left;"> METHOD </th>
    <th style="text-align:right;"> L_inf </th>
    <th style="text-align:right;"> K </th>
+   <th style="text-align:right;"> sd_L_inf </th>
+   <th style="text-align:right;"> sd_K </th>
   </tr>
  </thead>
 <tbody>
@@ -563,21 +569,29 @@ total_r_m  %>%
    <td style="text-align:left;"> GA </td>
    <td style="text-align:right;"> 7.436 </td>
    <td style="text-align:right;"> 0.1700000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> SA </td>
    <td style="text-align:right;"> 7.721 </td>
    <td style="text-align:right;"> 0.1090000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Simple </td>
    <td style="text-align:right;"> 7.400 </td>
    <td style="text-align:right;"> 0.0400000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
    <td style="text-align:right;"> 7.519 </td>
    <td style="text-align:right;"> 0.1063333 </td>
+   <td style="text-align:right;"> 0.1758607 </td>
+   <td style="text-align:right;"> 0.065041 </td>
   </tr>
 </tbody>
 </table>
@@ -600,11 +614,15 @@ total_r_5 <- as.data.frame(round(t_k_linf_5,3))
 t_k_linf_total_5 <- as_tibble(total_r_5, rownames = "group")
 
 # Calculo medias
-total_r_m_5 <- t_k_linf_total_5 %>% 
+total_r_m_5 <- t_k_linf_total_5 %>%
   bind_rows(
-    tibble(group = "Mean",
-           L_inf = mean(t_k_linf_total_5$L_inf),
-           K = mean(t_k_linf_total_5$K))
+    tibble(
+      group = "Mean",
+      L_inf = mean(t_k_linf_total_5$L_inf),
+       sd_L_inf = sd(t_k_linf_total_5$L_inf),
+      K = mean(t_k_linf_total_5$K),
+      sd_K = sd(t_k_linf_total_5$K)           
+    )
   )
 
 total_r_m_5  %>%
@@ -624,6 +642,8 @@ total_r_m_5  %>%
    <th style="text-align:left;"> METHOD </th>
    <th style="text-align:right;"> L_inf </th>
    <th style="text-align:right;"> K </th>
+   <th style="text-align:right;"> sd_L_inf </th>
+   <th style="text-align:right;"> sd_K </th>
   </tr>
  </thead>
 <tbody>
@@ -631,21 +651,29 @@ total_r_m_5  %>%
    <td style="text-align:left;"> GA </td>
    <td style="text-align:right;"> 7.391 </td>
    <td style="text-align:right;"> 0.5480000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> SA </td>
    <td style="text-align:right;"> 7.031 </td>
    <td style="text-align:right;"> 0.2400000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Simple </td>
    <td style="text-align:right;"> 8.000 </td>
    <td style="text-align:right;"> 0.2300000 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> NA </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
    <td style="text-align:right;"> 7.474 </td>
    <td style="text-align:right;"> 0.3393333 </td>
+   <td style="text-align:right;"> 0.489803 </td>
+   <td style="text-align:right;"> 0.1807798 </td>
   </tr>
 </tbody>
 </table>
@@ -698,13 +726,17 @@ age26 <- ggplot(df_curves,
                aes(x = time, 
                               y = length,
                               colour=METHOD)) +
+  geom_point()+
   geom_line()+
   labs(title = "Estimation with 26 Age Max",
        x = "years",
        y = "Length (mm)") +
   theme_few()+
   scale_colour_viridis_d(option="C",
-                         name="Method")
+                         name="Method")+
+  scale_x_continuous(breaks = seq(min(df_curves$time), 
+                                  max(df_curves$time), 
+                                  by = 1))  # Ajusta el intervalo según sea necesario
 ```
 
 
@@ -730,12 +762,16 @@ age5 <- ggplot(df_curves_5,
                               y = length,
                               colour=METHOD)) +
   geom_line()+
+  geom_point()+
  labs(title = "Estimation with 5 Age Max",
        x = "years",
        y = "Length (mm)") +
   theme_few()+
   scale_colour_viridis_d(option="C",
-                         name="Method")
+                         name="Method")+
+   scale_x_continuous(breaks = seq(min(df_curves$time), 
+                                  max(df_curves$time), 
+                                  by = 0.5))
 ```
 
 both plot
@@ -743,7 +779,7 @@ both plot
 
 ``` r
 ggarrange(age26, age5, common.legend = TRUE,
-          ncol=1,
+          ncol=2,
           legend="bottom")
 ```
 
@@ -904,19 +940,25 @@ Junto las bases y saco el promedio
 Total_M <- cbind(M5, M26)
 colnames(Total_M) <- c("Age Max 5", "age Max 26")
 mean_m <- colMeans(Total_M, na.rm = TRUE)
-Total_M_Mean <- rbind(Total_M, Mean = mean_m)
+sd_m <- apply(Total_M, 2, sd, na.rm = TRUE)  
+Total_M_Mean <- rbind(Total_M, 
+                      Mean = round(mean_m, 3), 
+                      SD = round(sd_m, 3))  
 ```
 Hago la Tabla
 
 
 ``` r
-Total_M_Mean  %>%
-  kbl(booktabs = T,
-      position="ht!",
-    caption = "Estimated M w/ different age") %>%
-  kable_styling(latex_options = c("striped",
-                                  "condensed"),
-                full_width = FALSE)
+Total_M_Mean %>% 
+  kbl(booktabs = TRUE,
+      position = "ht!",
+      caption = "Estimated M w/ different age") %>%
+  kable_styling(latex_options = c("striped", "condensed"), 
+                full_width = FALSE) %>% 
+  pack_rows("Resumen", 
+            start_row = nrow(Total_M_Mean) - 1, 
+            end_row = nrow(Total_M_Mean),
+            bold = TRUE)
 ```
 
 <table class="table" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
@@ -931,8 +973,8 @@ Total_M_Mean  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> Alverson and Carney (1975) </td>
-   <td style="text-align:right;"> 0.0280 </td>
-   <td style="text-align:right;"> 0.1520 </td>
+   <td style="text-align:right;"> 0.028 </td>
+   <td style="text-align:right;"> 0.152 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Gunderson and Dygert (1988) </td>
@@ -941,48 +983,48 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Hoenig (1983) - Joint Equation </td>
-   <td style="text-align:right;"> 0.1600 </td>
-   <td style="text-align:right;"> 0.1600 </td>
+   <td style="text-align:right;"> 0.160 </td>
+   <td style="text-align:right;"> 0.160 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Hoenig (1983) - Fish Equation </td>
-   <td style="text-align:right;"> 0.1490 </td>
-   <td style="text-align:right;"> 0.1490 </td>
+   <td style="text-align:right;"> 0.149 </td>
+   <td style="text-align:right;"> 0.149 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Lorenzen (1996) </td>
-   <td style="text-align:right;"> 0.5750 </td>
-   <td style="text-align:right;"> 0.5750 </td>
+   <td style="text-align:right;"> 0.575 </td>
+   <td style="text-align:right;"> 0.575 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Pauly (1980) - Length Equation </td>
-   <td style="text-align:right;"> 1.0570 </td>
-   <td style="text-align:right;"> 0.4940 </td>
+   <td style="text-align:right;"> 1.057 </td>
+   <td style="text-align:right;"> 0.494 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Peterson and Wroblewski (1984) </td>
-   <td style="text-align:right;"> 0.4860 </td>
-   <td style="text-align:right;"> 0.4860 </td>
+   <td style="text-align:right;"> 0.486 </td>
+   <td style="text-align:right;"> 0.486 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Rikhter and Efanov (1976) </td>
-   <td style="text-align:right;"> 0.7680 </td>
-   <td style="text-align:right;"> 0.7680 </td>
+   <td style="text-align:right;"> 0.768 </td>
+   <td style="text-align:right;"> 0.768 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Roff (1984) </td>
-   <td style="text-align:right;"> 1.0480 </td>
-   <td style="text-align:right;"> 1.3460 </td>
+   <td style="text-align:right;"> 1.048 </td>
+   <td style="text-align:right;"> 1.346 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Then (2015) - tmax </td>
-   <td style="text-align:right;"> 0.2310 </td>
-   <td style="text-align:right;"> 0.2310 </td>
+   <td style="text-align:right;"> 0.231 </td>
+   <td style="text-align:right;"> 0.231 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Then (2015) - growth </td>
-   <td style="text-align:right;"> 0.9630 </td>
-   <td style="text-align:right;"> 0.4120 </td>
+   <td style="text-align:right;"> 0.963 </td>
+   <td style="text-align:right;"> 0.412 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
@@ -994,10 +1036,16 @@ Total_M_Mean  %>%
    <td style="text-align:right;"> NA </td>
    <td style="text-align:right;"> NA </td>
   </tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>Resumen</strong></td></tr>
+<tr>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> Mean </td>
+   <td style="text-align:right;"> 0.546 </td>
+   <td style="text-align:right;"> 0.477 </td>
+  </tr>
   <tr>
-   <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 0.5465 </td>
-   <td style="text-align:right;"> 0.4773 </td>
+   <td style="text-align:left;padding-left: 2em;" indentlevel="1"> SD </td>
+   <td style="text-align:right;"> 0.396 </td>
+   <td style="text-align:right;"> 0.369 </td>
   </tr>
 </tbody>
 </table>
