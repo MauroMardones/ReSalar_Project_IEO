@@ -49,6 +49,24 @@ server <- function(input, output) {
       plot(res_SA_5)
     })
     
+    # Crear curva de crecimiento de Von Bertalanffy con ggplot2
+    output$growthCurve <- renderPlot({
+      ages <- seq(0, as.numeric(input$agemax), length.out = 50)
+      Linf <- res_SA_5$par$Linf
+      K <- res_SA_5$par$K
+      t0 <- res_SA_5$par$t_anchor
+      lengths <- Linf * (1 - exp(-K * (ages - t0)))
+      
+      growth_data <- data.frame(Age = ages, Length = lengths)
+      
+      ggplot(growth_data, aes(x = Age, y = Length)) +
+        geom_line(color = "blue", size = 1) +
+        labs(title = "Curva de Crecimiento de Von Bertalanffy",
+             x = "Edad",
+             y = "Longitud") +
+        theme_minimal()
+    })
+    
     # Crear tabla con gt
     output$resultTable <- render_gt({
       result_data <- data.frame(
@@ -73,8 +91,8 @@ server <- function(input, output) {
           title = "Resultados de ELEFAN_SA"
         ) %>%
         cols_label(
-          Metric = "Métrica",
-          Value = "Valor"
+          Metric = "Parametro",
+          Value = "Estimado"
         )
     })
   })

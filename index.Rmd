@@ -100,7 +100,7 @@ Cargar datos provenientes del experimiento de REDSALAR, en el cual se recopilan 
 
 ```{r data}
 # Restore the object
-db <- read_excel(here("DATA",
+db <- read_excel(here::here("DATA",
                      "BD_lfd_crec_salinas.xlsx"),
                      sheet="TropFish")
 ```
