@@ -17,7 +17,7 @@ This repository contains data and code related to the estimation of life history
   - `parameter_estimation.R`: Main script for estimating life history parameters (growth rates, age, mortality, etc.).
   
 - `results/`: Not included yet.
-  - two files `.Rdata` with result objetc from ELEFEAN analysis
+  - two files `.Rdata` with result object from ELEFAN analysis
   
 - `Figs/`: 
   - main captions and figures used in `index.Rmd` files
