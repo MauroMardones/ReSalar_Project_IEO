@@ -128,8 +128,7 @@ simple grafica de progesión de las tallas de *O. edulis* muestreadas mensualmen
 data1 <- ggplot(db1,
              aes(x=size,
                  y=as.factor(Date)))+
-  facet_grid(~ANO,
-             scales = "free_x")+
+  
   geom_density_ridges(stat = "binline", bins = 30, 
                       scale = 1.2, 
                       draw_baseline = T,

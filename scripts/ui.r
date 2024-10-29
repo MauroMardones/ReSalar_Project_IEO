@@ -26,7 +26,7 @@ lfq <- read_excel(here::here("DATA",
 
 lfq$Date <- as.Date(lfq$Date)
 # Crear un objeto lfq para el ID actual
-lfq <- lfqCreate(data = lfq,
+lfq1 <- lfqCreate(data = lfq,
                  Lname = "size",
                  Dname = "Date",
                  bin_size = 0.1,
@@ -42,17 +42,20 @@ init_par <- list(Linf = 7.5, K = 0.5, t_anchor = 0.5, C = 0.5, ts = 0.5)
 # Definir la interfaz de usuario (UI)
 ui <- fluidPage(
   titlePanel("Estimación de parámetros de O. edulis en distintos escenarios condicionados a la edad max y otros"),
+  
   tags$style(HTML("
     .sidebar-panel { font-size: 10px; padding: 10px; width: 250px !important; }
     .well-panel { font-size: 12px; padding: 5px; margin-bottom: 12px; width: 100% !important; }
     .btn { padding: 5px 10px; font-size: 12px; }
+    .center-plot { display: flex; justify-content: center; }
+    .results-section { margin-top: 20px; }
+    .tab-title { color: red; font-weight: bold; }
   ")),
   
   sidebarLayout(
     sidebarPanel(
       class = "sidebar-panel",
-      width = 3,  # Ajustar el ancho del sidebar (de 2 a 4 es un rango pequeño)
-      
+      width = 3,
       # Configuración de Parámetros Iniciales
       h4("Inicialización de Parámetros"),
       wellPanel(
@@ -90,25 +93,43 @@ ui <- fluidPage(
       # Botón para ejecutar ELEFAN_SA
       actionButton("run", "Ejecutar ELEFAN_SA", class = "btn btn-primary")
     ),
+
     
-    # Panel principal para mostrar resultados
+    # Panel principal con pestañas para gráficos y resultados
     mainPanel(
-      # Descripción del método
-      tags$div(
-        tags$h4("Descripción del Método ELEFAN con Simulated Annealing (SA)"),
-        tags$p("Este método usa Simulated Annealing para ajustar los parámetros del modelo ELEFAN, 
-               permitiendo estimar parámetros de crecimiento como Linf y K, junto con parámetros 
-               estacionales C y ts. Es útil en estudios de dinámica poblacional para comprender 
-               patrones de crecimiento en poblaciones marinas."),
-        h5(p("Para acceder al codigo autocontenido de este análisis y mas, visitar " ,tags$a(href="https://mauromardones.github.io/ReSalar_Project_IEO/", "Link", target="_blank"))),
-        h5(p("Para acceder al repositorio y datos utilizados, visitar " ,tags$a(href="https://github.com/MauroMardones/ReSalar_Project_IEO", "Repositorio", target="_blank"))),
-        tags$hr()  # Línea divisoria para separar la descripción del contenido siguiente
-      ),
-      # Outputs
-      plotOutput("freqPlot"), 
-      plotOutput("plotELEFAN_SA"),
-      plotOutput("growthCurve"),
-      gt_output("resultTable")
+      tabsetPanel(
+        # Pestaña de Gráficos
+        tabPanel(
+          tags$span(class = "tab-title", "Gráficos"),
+          tags$div(
+            tags$h4("Descripción del Método ELEFAN con Simulated Annealing (SA)"),
+            tags$p("Este método usa Simulated Annealing para ajustar los parámetros del modelo ELEFAN, 
+                   permitiendo estimar parámetros de crecimiento como Linf y K, junto con parámetros 
+                   estacionales C y ts. Es útil en estudios de dinámica poblacional para comprender 
+                   patrones de crecimiento en poblaciones marinas."),
+            h5(p("Para acceder al codigo autocontenido de este análisis y mas, visitar " ,tags$a(href="https://mauromardones.github.io/ReSalar_Project_IEO/", "Link", target="_blank"))),
+            h5(p("Para acceder al repositorio y datos utilizados, visitar " ,tags$a(href="https://github.com/MauroMardones/ReSalar_Project_IEO", "Repositorio", target="_blank"))),
+            tags$hr()  # Línea divisoria para separar la descripción del contenido siguiente
+          ),
+          # Solo el gráfico de frecuencias de tallas inicial
+          div(class = "center-plot", plotOutput("freqPlot"))
+        ),
+        
+        # Pestaña de Resultados
+        tabPanel(
+          tags$span(class = "tab-title", "Resultados"),
+          tags$div(
+            class = "results-section",
+            tags$h3("Resultados"),
+            # Resto de los gráficos y tabla de resultados
+            div(class = "center-plot", plotOutput("plotELEFAN_SA")),
+            div(class = "center-plot", plotOutput("growthCurve")),
+            gt_output("resultTable"),
+            # Botón para descargar el CSV
+            downloadButton("downloadCSV", "Descargar Resultados en CSV", class = "btn btn-primary")
+          )
+        )
+      )
     )
   )
 )
