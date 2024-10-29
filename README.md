@@ -22,6 +22,7 @@ This repository contains data and code related to the estimation of life history
 - `Figs/`: 
   - main captions and figures used in `index.Rmd` files
   
+  
 ### Experiment Overview
 
 The goal of the experiment was to estimate vital life history parameters (e.g., growth rates, mortality, and reproductive output) for the species *Ostrea eulisa* under controlled laboratory conditions. Data collected during the experiment includes individual size, age, and survival over time.
