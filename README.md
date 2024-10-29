@@ -16,7 +16,7 @@ This repository contains data and code related to the estimation of life history
   - `data_cleaning.R`: Script for cleaning and processing raw data.
   - `parameter_estimation.R`: Main script for estimating life history parameters (growth rates, age, mortality, etc.).
   
-- `results/`: Not included yet.
+- `results/`: 
   - two files `.Rdata` with result object from ELEFAN analysis to load and dont run agai the main functions
   
 - `Figs/`: 
@@ -61,4 +61,16 @@ Principal outpus and results can be found in this link: [Parameters Ostrea eduli
 ### Authors and Acknowledgments
 
 This project was conducted by researchers from the IEO of Murcia and IEO of Cádiz. We thank all participants and collaborators for their contributions.
+
+
+- **input/**: Esta carpeta contiene todos los datos y recursos necesarios para el análisis.
+  - **data-orig/**: Archivos de datos originales que se utilizarán para el análisis.
+  - **data-proc/**: Archivos de datos que han sido procesados y listos para análisis.
+  - **imagenes/**: Imágenes que se usarán o generarán en el proyecto.
+  - **bib/**: Archivos de bibliografía en formato BibTeX utilizados para referencias.
+  - **prereg/**: Archivos de pre-registro (si están disponibles).
+
+- **procesamiento/**: Contiene los scripts en R Markdown que preparan y analizan los datos.
+  - **preparacion.Rmd**: Script para la preparación de datos antes del análisis.
+  - **analisis.Rmd**: Script que realiza el análisis de los datos.
 
