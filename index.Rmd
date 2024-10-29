@@ -827,6 +827,7 @@ Total_M_Mean <- rbind(Total_M,
                       Mean = round(mean_m, 3), 
                       SD = round(sd_m, 3))  
 
+
 ```
 Hago la Tabla
 
