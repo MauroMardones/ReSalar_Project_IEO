@@ -2662,6 +2662,7 @@ M5 &lt;- M_empirical(Linf = t_k_linf_sep_5$L_inf[4], K_l = t_k_linf_sep_5$K[4],
 <p>Junto las bases y saco el promedio</p>
 <pre class="r"><code># junto las bases
 
+
 Total_M &lt;- cbind(M5, M26)
 colnames(Total_M) &lt;- c(&quot;Age Max 5&quot;, &quot;age Max 26&quot;)
 mean_m &lt;- colMeans(Total_M, na.rm = TRUE)
