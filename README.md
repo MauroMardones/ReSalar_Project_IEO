@@ -4,23 +4,23 @@ This repository contains data and code related to the estimation of life history
 
 ### Repository Structure
 
-├──  Main directory
-│
-├──  `DATA/`: Contains all raw and processed data from the experiment.
-│ ├──  `BD_lfd_crec_salinas.xlsx`: The raw experimental data w/ length frecuencies.
-│ ├──  `Datos ostras.doc`: Data with most relevant information about life history of *O. edulis*.
-│ ├── This folder is private by right permission on data
-│
-├──  `scripts/`: Contains all the R scripts used for data analysis and parameter estimation.
-│ ├──  `ui.r` and `server.r`:  Initial conditioning for a Shiny App based on testing key parameters such as maximum Age and their impact on LH parameter calculation in *O. edulis*
-│ ├──  `data_cleaning.R`: Script for cleaning and processing raw data.
-│ ├──  `parameter_estimation.R`: Main script for estimating life history parameters (growth rates, age, mortality, etc.).
-│
-├──  `results/`: 
-│ ├──  two files `.Rdata` with result object from ELEFAN analysis to load and dont run agai the main functions
-│  
-├──  `Figs/`: 
-│  ├──  main captions and figures used in `index.Rmd` files
+- Main directory
+
+- `DATA/`: Contains all raw and processed data from the experiment.
+  - `BD_lfd_crec_salinas.xlsx`: The raw experimental data w/ length frecuencies.
+  - `Datos ostras.doc`: Data with most relevant information about life history of *O. edulis*.
+  - This folder is private by right permission on data
+
+- `scripts/`: Contains all the R scripts used for data analysis and parameter estimation.
+  - `ui.r` and `server.r`:  Initial conditioning for a Shiny App based on testing key parameters such as maximum Age and their impact on LH parameter calculation in *O. edulis*
+  - `data_cleaning.R`: Script for cleaning and processing raw data.
+  - `parameter_estimation.R`: Main script for estimating life history parameters (growth rates, age, mortality, etc.).
+  
+- `results/`: 
+  - two files `.Rdata` with result object from ELEFAN analysis to load and dont run agai the main functions
+  
+- `Figs/`: 
+  - main captions and figures used in `index.Rmd` files
   
   
 ### Experiment Overview
