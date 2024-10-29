@@ -818,6 +818,7 @@ Junto las bases y saco el promedio
 ```{r}
 # junto las bases
 
+
 Total_M <- cbind(M5, M26)
 colnames(Total_M) <- c("Age Max 5", "age Max 26")
 mean_m <- colMeans(Total_M, na.rm = TRUE)
