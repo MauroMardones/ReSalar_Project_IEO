@@ -2,7 +2,7 @@
 title: "Derive Life story Parameters and natural mortality rates for Ostrea edulis to Minor Sea, Murcia, Spain"
 subtitle: "Project ReSalar"
 author: "Mardones, M; Delgado, Alcaraz, R; Albentosa, M"
-date:  "25 October, 2024"
+date:  "29 October, 2024"
 bibliography: param.bib
 csl: apa.csl
 link-citations: yes
@@ -27,6 +27,9 @@ editor_options:
 ---
 
 
+
+
+
 # Contexto
 
 
@@ -34,9 +37,30 @@ En este estudio, presentamos un enfoque metodológico para la estimación de par
 
 Nuestros resultados proporcionan una visión de la dinámica de crecimiento de *Ostrea edulis* en este entorno lagunar y experimental, lo cual es fundamental para entender la dínamica del crecimiento de la especie. La combinación de diferentes métodos permite una comparación robusta de los parámetros estimados, contribuyendo a una mejor comprensión de los rasgos de la historia de vida de esta especie bajo las condiciones ambientales específicas del Mar Menor.
 
+# Metodología
+
+Un aspecto clave en el análisis de las poblaciones marinas y su dinámica es contar con estimaciones empíricas, confiables y actualizadas de los parámetros de historia de vida (LH), como el crecimiento y la mortalidad natural [@Clark1999; @Mannini2020; @Perreault2021].
+
+Primero, calculamos \( L_{\infty} \) (longitud asintótica) y \( K \) (tasa de crecimiento) mediante un proceso conocido como Análisis de Progresión Modal. El **análisis de progresión modal** consiste en vincular los picos de la frecuencia de longitud muestreada en tiempos conocidos (\( t_1, t_2 \)) mediante incrementos de crecimiento (Figura \@ref(fig:1)).
+
+<div class="figure" style="text-align: center">
+<img src="Figs/3.png" alt="Ejemplo esquemático del Análisis de Progresión Modal." width="50%" />
+<p class="caption">Ejemplo esquemático del Análisis de Progresión Modal.</p>
+</div>
+Luego se ajustan las curvas mediante el Análisis Electrónico de Frecuencia de Longitud (ELEFAN). El **Análisis Electrónico de Frecuencia de Longitud** (ELEFAN) [@Gayanilo1997]  tiene como objetivo buscar una curva de crecimiento que se ajuste a los picos de los datos de frecuencia de longitud, logrando un ajuste óptimo, similar a los parámetros de una regresión lineal. En este caso se buscan los momentos de crecimiento positivo y negativo de la población  (Figura \@ref(fig:2)). Para ello, utilizamos tres algoritmos de ajuste, incluyendo:
+
+- Ajustes mediante regresión lineal
+- Algoritmo Genético (GA)
+- Recocido Simulado (SA)
 
 
-# Cargar paquetes necesarios para la estimacion y vizualización.
+<div class="figure" style="text-align: center">
+<img src="Figs/2.png" alt="Metodos de ajustes para ELEFAN" width="50%" />
+<p class="caption">Metodos de ajustes para ELEFAN</p>
+</div>
+
+
+### Cargar paquetes necesarios para la estimacion y vizualización.
 
 
 ``` r
@@ -56,11 +80,11 @@ library(TropFishR)
 library(mixR)
 library(readxl)
 ```
-#  Estimación de parametros `k` and `L_inf_` para *O. edulis*
 
-## Manipulación de Data
 
-Load DB from experiment in salar in Minor Sea. This data is monthly recollected.
+### Manipulación de Data
+
+Cargar datos provenientes del experimiento de REDSALAR, en el cual se recopilan estructuras de tallas mensuales.
 
 
 ``` r
@@ -92,19 +116,32 @@ histogram length data to viz in another way.
 
 
 
+
+simple grafica de progesión de las tallas de *O. edulis* muestreadas mensualmente durante el experimento entre los años 2023 y 2024.
+
+
+
 ``` r
-jzstrata <- ggplot(db1,
-             aes(x=size))+
-  geom_histogram(binwidth = 2)+
-  facet_wrap(~Sampling.point,
-             ncol=5) +
-  theme_bw()+
-  xlab("Length (mm)")+
-  ylab("Frecuency")
-jzstrata
+data1 <- ggplot(db1,
+             aes(x=size,
+                 y=as.factor(Date)))+
+  facet_grid(~ANO,
+             scales = "free_x")+
+  geom_density_ridges(stat = "binline", bins = 30, 
+                      scale = 1.2, 
+                      draw_baseline = T,
+                      alpha=0.5,
+                      fill="blue")+  
+  theme_few()+
+  theme(legend.position = "none",
+        axis.text = element_text(angle = 90))+
+  xlab("Length (mm.)")+
+  ylab("")+
+  coord_flip()
+data1
 ```
 
-<img src="index_files/figure-html/lengcom2-1.jpeg" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/lengcom-1.jpeg" style="display: block; margin: auto;" />
 
 Statistical difference between month
 
@@ -150,34 +187,7 @@ Cómo interpretar el gráfico:
 
 Si una línea horizontal no cruza el cero, la diferencia entre los grupos correspondientes es significativa al nivel de confianza dado (normalmente 95%). Si una línea horizontal cruza el cero, no hay una diferencia significativa entre esos dos grupos. Cuanto más larga sea la línea horizontal, mayor es la variabilidad o incertidumbre en la diferencia estimada.
 
-
-simple grafica de progesión de las tallas de *O. edulis* muestreadas mensualmente durante el experimento entre los años 2023 y 2024.
-
-
-
-``` r
-data1 <- ggplot(db1,
-             aes(x=size,
-                 y=as.factor(Date)))+
-  facet_grid(~ANO,
-             scales = "free_x")+
-  geom_density_ridges(stat = "binline", bins = 30, 
-                      scale = 1.2, 
-                      draw_baseline = T,
-                      alpha=0.5,
-                      fill="blue")+  
-  theme_few()+
-  theme(legend.position = "none",
-        axis.text = element_text(angle = 90))+
-  xlab("Length (mm.)")+
-  ylab("")+
-  coord_flip()
-data1
-```
-
-<img src="index_files/figure-html/lengcom-1.jpeg" style="display: block; margin: auto;" />
-
-## Analisis
+### Análisis estadístico de modas
 
 First we use `mixR` [@Yu2021a] to identified numbers of component (modal compositions). With this result, set `ELEFAN` method
 
@@ -225,6 +235,7 @@ plot(modgs,
 
 <img src="index_files/figure-html/unnamed-chunk-6-1.jpeg" style="display: block; margin: auto;" />
 
+###  Estimación de parametros `k` and `L_inf_` para *O. edulis*
 
 Preparamos el objeto para la estimación 
 
@@ -290,13 +301,13 @@ plot(lfqbin, hist.col = c("white", "black"),
 
 <img src="index_files/figure-html/unnamed-chunk-9-1.jpeg" style="display: block; margin: auto;" />
 
-## Calculo de Parámetros
 
 Procedemos a calcular con los tres metodos dispuestos por `TropFishR` package para etsimación de parametros de LH, en este caso, `ELEFAN`, `ELEFAN_SA` (Electronic LEngth Frequency ANalysis with simulated annealing for estimating growth parameters) y `ELEFAN_GA` (Electronic LEngth Frequency ANalysis with genetic algorithm used for estimating growth parameters). Estos últimos dos métodos son conceptos metodologicos en el proceso de estimación a través de los algoritmos, desarrollasos en funcion de optimizar los recursos computacionales. 
 
-## Set de parametros comunes para estimación
+Seteo parametros comunes para la estimacion. 
 
-`Linf_range`: Para hacer que ELEFAN sea comparable con los otros métodos, he ajustado `Linf_range` a seq(7.0, 8.0, 0.1) para que coincida con los límites de low_par y up_par en los otros métodos. `K_range`: Utilicé el mismo rango de K para los tres métodos, con valores entre 0.01 y 0.9. 
+`Linf_range`: Para hacer que ELEFAN sea comparable con los otros métodos, he ajustado `Linf_range` a seq(7.0, 8.0, 0.1) para que coincida con los límites de low_par y up_par en los otros métodos.
+`K_range`: Utilicé el mismo rango de K para los tres métodos, con valores entre 0.01 y 0.9. 
 
 En los tres métodos, he activado la estacionalidad (`seasonalised = TRUE` en `ELEFAN_SA` y `ELEFAN_GA`) y utilicé valores de `C` = 0 y `ts` = 0.5 para asegurar la coherencia. Estos parametros dicen relaciñon con la oscilacion estacional fdel crecimiento, información que para *O. edulis* no tenemos y por eso la dejamos en la mitad del año.
 
@@ -361,15 +372,7 @@ res_simple <- ELEFAN(lfq,
                      add.values = TRUE,
                      rsa.colors = terrain.colors(20),
                      plot_title = TRUE)
-```
 
-```
-## Optimisation procuedure of ELEFAN is running. 
-## This will take some time. 
-## The process bar will inform you about the process of the calculations.
-```
-
-``` r
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
@@ -381,21 +384,8 @@ res_SA <- ELEFAN_SA(lfq,
                     low_par = low_par,   # Limites inferiores comunes
                     up_par = up_par,     # Limites superiores comunes
                     plot = FALSE,
-                    plot.score = TRUE)
-```
+                    plot.score = FALSE)
 
-```
-## Simulated annealing is running. 
-## This will take approximately 0.5 minutes.
-## timeSpan = 30.023313 maxTime = 30
-## Emini is: -0.4166288316
-## xmini are:
-## 7.721172084 0.1092790548 0.6672459496 0.9456267171 0.449311425 
-## Totally it used 30.023414 secs
-## No. of function call is: 883
-```
-
-``` r
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA <- ELEFAN_GA(lfq,
                     MA = 1,
@@ -409,11 +399,29 @@ res_GA <- ELEFAN_GA(lfq,
                     plot = FALSE)
 ```
 
-```
-## Genetic algorithm is running. This might take some time.
+Guardo los resultados del escenario de 26 años
+
+
+``` r
+save(res_simple, 
+     res_SA, 
+     res_GA, 
+     file = "results/elefan26_results.RData")
 ```
 
-<img src="index_files/figure-html/unnamed-chunk-11-1.jpeg" style="display: block; margin: auto;" />
+
+Ahora leo los archivos
+
+
+``` r
+# Verifica si el archivo "elefan_results.RData" existe en la carpeta "results" y carga los datos
+if (file.exists("results/elefan26_results.RData")) {
+  load("results/elefan26_results.RData")
+} else {
+  stop("no read")
+}
+```
+
 
 Ahora estimaremos con lo encontrado en Rosique (1994) en el Mar Menor reportando una edad máxima  de 5 años 
 
@@ -440,15 +448,7 @@ res_simple_5 <- ELEFAN(lfq,
                      add.values = TRUE,
                      rsa.colors = terrain.colors(20),
                      plot_title = TRUE)
-```
 
-```
-## Optimisation procuedure of ELEFAN is running. 
-## This will take some time. 
-## The process bar will inform you about the process of the calculations.
-```
-
-``` r
 # Método 2: ELEFAN con Simulated Annealing (SA)
 res_SA_5 <- ELEFAN_SA(lfq,
                     SA_time = 60 * 0.5,
@@ -460,21 +460,8 @@ res_SA_5 <- ELEFAN_SA(lfq,
                     low_par = low_par,   # Limites inferiores comunes
                     up_par = up_par,     # Limites superiores comunes
                     plot = FALSE,
-                    plot.score = TRUE)
-```
+                    plot.score = FALSE)
 
-```
-## Simulated annealing is running. 
-## This will take approximately 0.5 minutes.
-## timeSpan = 30.004123 maxTime = 30
-## Emini is: -0.2951262403
-## xmini are:
-## 7.030942708 0.2404789891 0.4903380871 0.8204449639 0.5894297063 
-## Totally it used 30.00422 secs
-## No. of function call is: 2705
-```
-
-``` r
 # Método 3: ELEFAN con algoritmo genético (GA)
 res_GA_5 <- ELEFAN_GA(lfq,
                     MA = 1,
@@ -488,11 +475,28 @@ res_GA_5 <- ELEFAN_GA(lfq,
                     plot = FALSE)
 ```
 
-```
-## Genetic algorithm is running. This might take some time.
+
+Guardo los resultados del escenario de 26 años
+
+
+``` r
+save(res_simple_5, 
+     res_GA_5, 
+     res_SA_5, 
+     file = "results/elefan5_results.RData")
 ```
 
-<img src="index_files/figure-html/unnamed-chunk-12-1.jpeg" style="display: block; margin: auto;" />
+
+Ahora leo los archivos
+
+
+``` r
+if (file.exists("results/elefan5_results.RData")) {
+  load("results/elefan5_results.RData")
+} else {
+  stop("no read")
+}
+```
 
 Extraigo los parámetros para cada escenario de estimación.
 
@@ -557,23 +561,23 @@ total_r_m  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> GA </td>
-   <td style="text-align:right;"> 7.006000 </td>
-   <td style="text-align:right;"> 0.1170000 </td>
+   <td style="text-align:right;"> 7.436 </td>
+   <td style="text-align:right;"> 0.1700000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> SA </td>
-   <td style="text-align:right;"> 7.721000 </td>
+   <td style="text-align:right;"> 7.721 </td>
    <td style="text-align:right;"> 0.1090000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Simple </td>
-   <td style="text-align:right;"> 7.400000 </td>
+   <td style="text-align:right;"> 7.400 </td>
    <td style="text-align:right;"> 0.0400000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 7.375667 </td>
-   <td style="text-align:right;"> 0.0886667 </td>
+   <td style="text-align:right;"> 7.519 </td>
+   <td style="text-align:right;"> 0.1063333 </td>
   </tr>
 </tbody>
 </table>
@@ -625,23 +629,23 @@ total_r_m_5  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> GA </td>
-   <td style="text-align:right;"> 7.459000 </td>
-   <td style="text-align:right;"> 0.6980000 </td>
+   <td style="text-align:right;"> 7.391 </td>
+   <td style="text-align:right;"> 0.5480000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> SA </td>
-   <td style="text-align:right;"> 7.031000 </td>
+   <td style="text-align:right;"> 7.031 </td>
    <td style="text-align:right;"> 0.2400000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Simple </td>
-   <td style="text-align:right;"> 8.000000 </td>
+   <td style="text-align:right;"> 8.000 </td>
    <td style="text-align:right;"> 0.2300000 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 7.496667 </td>
-   <td style="text-align:right;"> 0.3893333 </td>
+   <td style="text-align:right;"> 7.474 </td>
+   <td style="text-align:right;"> 0.3393333 </td>
   </tr>
 </tbody>
 </table>
@@ -739,18 +743,104 @@ both plot
 
 ``` r
 ggarrange(age26, age5, common.legend = TRUE,
-          ncol=2,
+          ncol=1,
           legend="bottom")
 ```
 
-<img src="index_files/figure-html/unnamed-chunk-20-1.jpeg" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-24-1.jpeg" style="display: block; margin: auto;" />
 
 
-# Mortalidad Natural para *O. edulis*
+## Mortalidad Natural para *O. edulis*
 
-En este cálculo de Mortalidasd natural mediante diferentes metodos bioanalogicos, probamos ambos escenarios de edades y sus respectivos calculos de parametros para la ostra del experimento
+En este cálculo de Mortalidad natural mediante diferentes metodos bioanalogicos, probamos ambos escenarios de edades y sus respectivos calculos de parametros para la ostra del experimento.
 
-Primero en parametros con edades de 26
+La mortalidad natural (\( M \)) es un parámetro esencial en la gestión de poblaciones de peces. Existen varios métodos bioanalógicos para estimar \( M \) en función de características biológicas. A continuación, se describen algunos de estos métodos junto con sus respectivas fórmulas. 
+
+
+
+1. Método de Pauly [@Pauly1980a] (Pauly_Linf)
+
+El método de Pauly relaciona la mortalidad natural con la longitud asintótica (\( L_{\infty} \)), la tasa de crecimiento (\( K \)) y la temperatura media del hábitat (\( T \)).
+
+\[
+M = 10^{-0.0066 - 0.279 \log_{10}(L_{\infty}) + 0.6543 \log_{10}(K) + 0.4634 \log_{10}(T)}
+\]
+
+2. Método de Hoenig [@Hoenig1983]
+
+Hoenig propuso una relación empírica entre \( M \) y la longevidad máxima (\( t_{max} \)) de los peces.
+
+\[
+M = 4.22 / t_{max}
+\]
+
+3. Método de Alverson y Carney [@Alverson1975]
+
+Este método utiliza la relación entre \( M \) y el tamaño asintótico.
+
+\[
+M = 1.5 / \sqrt{L_{\infty}}
+\]
+
+4. Método de Rikhter y Efanov [@Rikhter1976]
+
+Rikhter y Efanov relacionan la mortalidad natural con la edad de madurez sexual (\( t_m \)).
+
+\[
+M = 1.521 / t_m^{0.72} - 0.155
+\]
+
+5. Método de Gunderson y Dygert [@GundersonDygert1988]
+
+Este método utiliza la proporción de peso de los ovarios (\( W_g \)) en relación con el peso total del pez.
+
+\[
+M = 3.0 \cdot W_g
+\]
+
+6. Método de Lorenzen [@Lorenzen1996]
+
+Este método relaciona \( M \) con el peso corporal (\( W \)) del pez.
+
+\[
+M = 3 \cdot W^{-0.288}
+\]
+
+7. Método de Peterson y Wroblewski [@PetersonWroblewski1984]
+
+Peterson y Wroblewski propusieron una relación entre \( M \) y el peso corporal (\( W \)) del pez.
+
+\[
+M = 1.92 \cdot W^{-0.25}
+\]
+
+8. Método de Roff [@Roff1984]
+
+El método de Roff se basa en la relación entre \( M \) y la edad de madurez sexual.
+
+\[
+M = 1.03 / t_m
+\]
+
+9. Método de Then [@Then2015]
+
+Then propuso una fórmula que usa la tasa de crecimiento (\( K \)) para estimar \( M \).
+
+\[
+M = 4.899 \cdot K^{0.914}
+\]
+
+10. Método de Then [@Then2015]
+
+Otra fórmula propuesta por Then usa la longevidad máxima (\( t_{max} \)) para estimar \( M \).
+
+\[
+M = 4.118 / t_{max}^{0.73}
+\]
+
+Una vez descritops los métodos, procedemos a calcular el parametro de Mortalidad natural para los resultados de ambos escenarios relativos a las edades 5 y 26 usando la función `M_empirical` de la librería `TropfishR`.
+
+M para escenario con edad 26 para *O. edulis*
 
 
 ``` r
@@ -778,7 +868,7 @@ M26 <- M_empirical(Linf = t_k_linf_sep$L_inf[4], K_l = t_k_linf_sep$K[4],
 ```
 
 
-Ahora calculo M con parámetros con edades de 5
+Ahora calculo M con parámetros con edades de 5.
 
 
 ``` r
@@ -841,8 +931,8 @@ Total_M_Mean  %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> Alverson and Carney (1975) </td>
-   <td style="text-align:right;"> 0.0190 </td>
-   <td style="text-align:right;"> 0.1700 </td>
+   <td style="text-align:right;"> 0.0280 </td>
+   <td style="text-align:right;"> 0.1520 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Gunderson and Dygert (1988) </td>
@@ -866,8 +956,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Pauly (1980) - Length Equation </td>
-   <td style="text-align:right;"> 1.1560 </td>
-   <td style="text-align:right;"> 0.4410 </td>
+   <td style="text-align:right;"> 1.0570 </td>
+   <td style="text-align:right;"> 0.4940 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Peterson and Wroblewski (1984) </td>
@@ -881,8 +971,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Roff (1984) </td>
-   <td style="text-align:right;"> 0.9910 </td>
-   <td style="text-align:right;"> 1.3710 </td>
+   <td style="text-align:right;"> 1.0480 </td>
+   <td style="text-align:right;"> 1.3460 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> Then (2015) - tmax </td>
@@ -891,8 +981,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Then (2015) - growth </td>
-   <td style="text-align:right;"> 1.0640 </td>
-   <td style="text-align:right;"> 0.3630 </td>
+   <td style="text-align:right;"> 0.9630 </td>
+   <td style="text-align:right;"> 0.4120 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
@@ -906,8 +996,8 @@ Total_M_Mean  %>%
   </tr>
   <tr>
    <td style="text-align:left;"> Mean </td>
-   <td style="text-align:right;"> 0.5599 </td>
-   <td style="text-align:right;"> 0.4714 </td>
+   <td style="text-align:right;"> 0.5465 </td>
+   <td style="text-align:right;"> 0.4773 </td>
   </tr>
 </tbody>
 </table>
@@ -956,7 +1046,7 @@ m_plot <- ggplot(df_long %>%
 m_plot
 ```
 
-<img src="index_files/figure-html/unnamed-chunk-26-1.jpeg" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-30-1.jpeg" style="display: block; margin: auto;" />
 
 
 Statistical diferences betweenm (work in progress)
